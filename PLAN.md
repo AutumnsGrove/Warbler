@@ -164,6 +164,8 @@ getUserMedia({ audio: {
 
 ### Validation (required before Phase 4 is done)
 
+The full test strategy is in `docs/testing.md`. The summary below is the minimum.
+
 `tools/validate/` (Python, uv):
 
 1. **Synthetic ground truth.** Generate source-filter vowels with known F0 and F1–F3; assert TS output is within tolerance (start at ±3% F0, ±8% formants; tighten if easy).
@@ -339,7 +341,7 @@ Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autum
 - `make test`: vitest (DSP, rules), `go test ./...`, Python validation (opt-in, needs recordings).
 - `make build-arm64`: `GOOS=linux GOARCH=arm64 CGO_ENABLED=0`; embed the web build.
 - `make deploy`: build an arm64 Docker image, copy it to the potato, restart the container. Her other services on the potato run in Docker, so Warbler matches that; do not introduce a new pattern.
-- Never commit recordings, `data/`, or personal settings.
+- Never commit recordings, `data/`, `local-recordings/`, or personal settings.
 
 ## Working agreement
 
