@@ -44,14 +44,14 @@ This file is the source of truth for the build. An agent should read it fully, t
 | Topic | Decision |
 |---|---|
 | Delivery | PWA installed to iOS home screen |
-| Hosting | The potato, via `tailscale serve` (tailnet-only HTTPS) |
+| Hosting | The potato, in Docker (matching her other services), via `tailscale serve` (tailnet-only HTTPS) |
 | Backend | Go, single static binary, SQLite (`modernc.org/sqlite`, pure Go) |
 | Frontend | SvelteKit + TypeScript, `adapter-static`, SPA mode |
 | DSP | In the browser (AudioWorklet + Web Worker). The server never analyses audio in v1 |
 | Connectivity | Online-only. No offline caching of data; only a tiny retry buffer for an unsent session (see Phase 5) |
 | Scope | Everything in v1, including daily lessons |
 | Audio retention | Keep all audio for every session (disk is plentiful: 256 GB) |
-| Auth | None. Go binds to `127.0.0.1`; only `tailscale serve` reaches it |
+| Auth | None. The container port is published to `127.0.0.1` on the potato only; `tailscale serve` is the sole way in |
 | Targets | User-configurable. The app ships **no default target** and assumes no direction |
 
 ## Architecture
@@ -103,7 +103,7 @@ warbler/
 │   ├── internal/{api,db,store}/
 │   └── migrations/
 ├── tools/validate/          # Python (uv): synthetic vowels + parselmouth comparison
-└── deploy/                  # systemd unit, tailscale serve notes
+└── deploy/                  # Dockerfile, compose file, tailscale serve notes
 ```
 
 ## Safety rules (non-negotiable)
@@ -204,7 +204,7 @@ GET    /api/weekly/current      this week's report/plan (computes if absent)
 GET    /api/export              zip of db + audio + series
 ```
 
-Server rules: bind `127.0.0.1`; cap request body size sensibly (sessions up to ~100 MB); validate WAV headers; never trust client paths.
+Server rules: publish the port on `127.0.0.1` only (Docker `-p 127.0.0.1:PORT:8080`); cap request body size sensibly (sessions up to ~100 MB); validate WAV headers; never trust client paths.
 
 ## Lessons and weekly coach
 
@@ -309,7 +309,7 @@ Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autum
 ### Phase 8: Hardening
 
 - Backup story for `data/` (nightly copy to somewhere other than the potato's own SD/eMMC; ask the user where).
-- systemd unit, log rotation, disk-space check in `/api/health`.
+- Docker restart policy (`unless-stopped`), log rotation, disk-space check in `/api/health`.
 - Accessibility pass: contrast, tap targets, reduced motion.
 - README with deploy and recovery steps.
 
@@ -320,7 +320,7 @@ Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autum
 - `make dev`: Vite dev server and Go API with proxy; expose the dev port via `tailscale serve` for the phone.
 - `make test`: vitest (DSP, rules), `go test ./...`, Python validation (opt-in, needs recordings).
 - `make build-arm64`: `GOOS=linux GOARCH=arm64 CGO_ENABLED=0`; embed the web build.
-- `make deploy`: copy binary to the potato, restart the service. **Check how her other services on the potato are run (systemd vs Docker) and match that**; do not introduce a new pattern.
+- `make deploy`: build an arm64 Docker image, copy it to the potato, restart the container. Her other services on the potato run in Docker, so Warbler matches that; do not introduce a new pattern.
 - Never commit recordings, `data/`, or personal settings.
 
 ## Working agreement
