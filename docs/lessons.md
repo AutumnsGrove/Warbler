@@ -44,62 +44,80 @@ I read the two systematic reviews and the TruVox paper cited in the plan, plus p
 7. **No emojis. No promises. No timelines** ("in 4 weeks you will...").
 8. **Our own wording and our own exercise names.** Source ideas are paraphrased, never copied.
 
-## 3. Proposed curriculum (18 lessons)
+## 3. Proposed curriculum (30 lessons)
 
-Order numbers follow the plan's `order:` field. "Needs" shows what in the app must exist.
+You asked for more variety, so this is 30 lessons, above the plan's original 14 to 20. "Needs" shows what in the app must exist first.
 
-### Health (3)
+**Release in waves.** Writing 30 careful, sourced lessons is a lot, and each needs a human read. Proposed waves so you can start using the app early:
+
+- **Wave 1 (first release of Phase 6):** the 3 health basics, pitch 1 to 4, resonance 1, quality 2, prosody 1, transfer 1. About 12 lessons.
+- **Wave 2:** the rest of pitch, resonance (non-chart), quality, prosody, articulation.
+- **Wave 3:** chart-based resonance lessons (after Phase 4), and the remaining transfer lessons.
+
+### Health (5)
 
 | # | id | Title | What it teaches | Needs |
 |---|---|---|---|---|
-| 1 | health-01 | Easing in | How Warbler works, what strain feels like, water, rest, when to see a professional | Phase 1 |
-| 2 | health-02 | A gentle warm-up | Humming, lip trills, and straw-style blowing sounds that ease the voice in. Explained simply: partly blocking the mouth makes the voice work less hard | Phase 1 |
+| 1 | health-01 | Easing in | How Warbler works, what strain feels like, when to stop, when to get help | Phase 1 |
+| 2 | health-02 | A gentle warm-up | Humming, lip trills and straw-style blowing sounds. Partly blocking the mouth makes the voice work less hard | Phase 1 |
 | 3 | health-03 | Cooling down and resting | Short voice naps, easy cool-down sounds, signs it is time to stop for the day | Phase 1 |
+| 4 | health-04 | Everyday voice care | Water, humidity, throat clearing, shouting, caffeine and alcohol (from NIDCD and NHS guidance) | Phase 1 |
+| 5 | health-05 | Checking for tension | Quick check of jaw, neck and shoulders, and simple ways to loosen them | Phase 1 |
 
-### Pitch (4)
-
-| # | id | Title | What it teaches | Needs |
-|---|---|---|---|---|
-| 4 | pitch-01 | Exploring your range | Slide from your lowest comfortable sound to your highest comfortable sound, with no target. See where your voice lives | Phase 1 |
-| 5 | pitch-02 | Matching a pitch | Hold a steady pitch against a line on the graph | Phase 1 |
-| 6 | pitch-03 | Steps | Move between a few set pitches in order | Phase 1 |
-| 7 | pitch-04 | From sounds to phrases | Carry a chosen pitch from a hum to a word to a short phrase, then at normal speed | Phase 1 |
-
-### Resonance (3)
+### Pitch (6)
 
 | # | id | Title | What it teaches | Needs |
 |---|---|---|---|---|
-| 8 | res-01 | Listening for bright and dark | Contrast a rounder "ah" with a forward "ee". Find how tongue position changes the sound. **No gripping or lifting the throat** | Phase 1 (listening only) |
-| 9 | res-02 | Reading your vowel chart | What the chart shows and how your vowels move on it as you explore | Phase 4 |
-| 10 | res-03 | Resonance in words and phrases | Keep the explored sound across a short list of words | Phase 4 |
+| 6 | pitch-01 | Exploring your range | Slide from your lowest comfortable sound to your highest, with no target | Phase 1 |
+| 7 | pitch-02 | Matching a pitch | Hold a steady pitch against a line on the graph | Phase 1 |
+| 8 | pitch-03 | Steps | Move between a few set pitches in order | Phase 1 |
+| 9 | pitch-04 | From sounds to phrases | Carry a chosen pitch from a hum to a word to a short phrase, then at normal speed | Phase 1 |
+| 10 | pitch-05 | Counting and everyday words | Use your chosen pitch on automatic speech: counting, days of the week, greetings | Phase 1 |
+| 11 | pitch-06 | Finishing sentences steady | Notice whether pitch drifts at the end of sentences, and practise keeping it level | Phase 1 |
 
-### Vocal quality (2)
-
-| # | id | Title | What it teaches | Needs |
-|---|---|---|---|---|
-| 11 | qual-01 | Light and easy starts | Starting words gently, with a little airflow, without pushing. Marked optional | Phase 1 |
-| 12 | qual-02 | Relaxed breathing | Calm breath for speaking, relaxed shoulders and jaw | Phase 1 |
-
-### Prosody, meaning how pitch moves in speech (2)
+### Resonance (5)
 
 | # | id | Title | What it teaches | Needs |
 |---|---|---|---|---|
-| 13 | pros-01 | Gliding and sliding | Move pitch up and down on words and phrases for expression | Phase 1 |
-| 14 | pros-02 | Emphasis and questions | Stress the important word. How a question can rise or fall. Two words that sound different by stress (such as "record" the noun and the verb) | Phase 1 |
+| 12 | res-01 | Listening for bright and dark | Contrast a rounder "ah" with a forward "ee". **No gripping or lifting the throat** | Phase 1 (listening only) |
+| 13 | res-02 | Shaping with your lips | How lip shape changes the sound, using spread and rounded lips | Phase 1 (listening only) |
+| 14 | res-03 | Where your tongue sits | Move the tongue forward and back on a set of vowels and listen to the change | Phase 1 (listening only) |
+| 15 | res-04 | Reading your vowel chart | What the chart shows and how your vowels move on it | Phase 4 |
+| 16 | res-05 | Resonance in words and phrases | Keep the explored sound across short word lists, checked on the chart | Phase 4 |
 
-### Articulation (1)
-
-| # | id | Title | What it teaches | Needs |
-|---|---|---|---|---|
-| 15 | art-01 | Clear and relaxed speech | Easy lip and jaw movement, speaking at a comfortable pace | Phase 1 |
-
-### Carry-over into daily life (3)
+### Vocal quality (3)
 
 | # | id | Title | What it teaches | Needs |
 |---|---|---|---|---|
-| 16 | xfer-01 | Anchor phrases | Pick a few everyday phrases you practise until they feel natural | Phase 2 |
-| 17 | xfer-02 | Easy situations first | List situations from easiest to hardest and pick the first to try (the plan's ranking idea) | Phase 2 |
-| 18 | xfer-03 | Quick resets | Short check-ins during the day, recording a short clip, being kind to yourself when the voice drifts | Phase 2 |
+| 17 | qual-01 | Light and easy starts | Starting words gently, with a little airflow, without pushing. Optional | Phase 1 |
+| 18 | qual-02 | Relaxed breathing | Calm breath for speaking, relaxed shoulders and jaw | Phase 1 |
+| 19 | qual-03 | Comfortable volume | Finding a volume that carries without pushing or straining | Phase 1 |
+
+### Prosody, meaning how pitch moves in speech (4)
+
+| # | id | Title | What it teaches | Needs |
+|---|---|---|---|---|
+| 20 | pros-01 | Gliding and sliding | Move pitch up and down on words and phrases for expression | Phase 1 |
+| 21 | pros-02 | Emphasis and questions | Stress the important word. How a question can rise or fall. Words that change by stress ("record" noun versus verb) | Phase 1 |
+| 22 | pros-03 | Pace and pauses | Slowing down, pausing between ideas, and how that changes how speech feels | Phase 1 |
+| 23 | pros-04 | Expressive reading | Read a short passage with more variety in pitch and emphasis | Phase 2 |
+
+### Articulation (2)
+
+| # | id | Title | What it teaches | Needs |
+|---|---|---|---|---|
+| 24 | art-01 | Clear and relaxed speech | Easy lip and jaw movement, speaking at a comfortable pace | Phase 1 |
+| 25 | art-02 | Clean word endings | Finishing words lightly and clearly. Optional, thin evidence | Phase 1 |
+
+### Carry-over into daily life (5)
+
+| # | id | Title | What it teaches | Needs |
+|---|---|---|---|---|
+| 26 | xfer-01 | Anchor phrases | Pick a few everyday phrases and practise them until they feel natural | Phase 2 |
+| 27 | xfer-02 | Easy situations first | List situations from easiest to hardest and choose the first to try | Phase 2 |
+| 28 | xfer-03 | Quick resets | Short check-ins during the day, and being kind to yourself when the voice drifts | Phase 2 |
+| 29 | xfer-04 | Listening back | Replay a session, notice what you like, and pick one thing to work on | Phase 2 |
+| 30 | xfer-05 | Phone calls and ordering | Practise common short exchanges: ordering food, booking, phoning a shop | Phase 2 |
 
 ## 4. Lesson file template
 
@@ -158,8 +176,13 @@ Tier C (ideas only):
 
 **Not verified:** I could read the TruVox paper only through search summaries (the direct page fetch failed), and the Rainbow Health Ontario PDF and the JSLHR paper only through search excerpts. Before any lesson cites them for a specific claim, they must be read in full.
 
-## 6. Open questions for you
+## 6. Decisions
 
-1. **Direction-neutral wording** is my reading of the plan's "assumes no direction". Is that right, or do you want lessons written for your own goals specifically?
-2. **18 lessons** is the top of the plan's 14 to 20. Should I trim to 14 for a faster first release? The quality and articulation lessons are the thinnest in evidence and are easiest to cut.
-3. **Do you plan to see an SLP at some point?** If yes, lessons can include a short "bring this to your appointment" note in each topic, which suits the draft-then-review workflow.
+1. **Direction-neutral wording:** confirmed. Keep it general. No lesson prescribes a direction.
+2. **More lessons:** confirmed. 30 lessons, released in waves.
+3. **Home-only, no SLP:** confirmed. The safety screen still mentions a speech-language pathologist for persistent problems, because that is the safety net of last resort and the plan's safety rules require it. It stays a gentle mention, not a requirement or a sales pitch. Because there is no professional listening, the plan leans harder on the built-in guardrails: conservative ramp, session cap, break prompts, tag-based rest note. Lessons also avoid anything that looks like clinical technique (such as hands-on neck or larynx manipulation).
+
+## 7. Still open
+
+1. **Wave split.** Are the three waves above fine, or would you rather have all 30 before using lessons at all?
+2. **Pace of writing.** I can draft lessons in batches of about 5 for your review. Do you want to read every one before it is merged, or skim and approve in bulk?
