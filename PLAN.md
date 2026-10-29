@@ -35,7 +35,7 @@ This file is the source of truth for the build. An agent should read it fully, t
 
 - Native iOS/Android apps (this is a PWA).
 - Cloud hosting, public exposure, Tailscale Funnel, multi-user support, auth.
-- LLM calls of any kind. The weekly plan is rule-based.
+- LLM or other outside-service calls **at runtime** (in the app or on the potato). The weekly plan is rule-based. The one exception is the Mac-only authoring tool for the call simulator (see `docs/call-simulator.md`), which runs by hand, is never deployed, and only voices scripts already approved.
 - Offline use. The app is **online-only** (needs Tailscale connected).
 - Medical claims. This is a practice aid, not therapy.
 
@@ -53,6 +53,7 @@ This file is the source of truth for the build. An agent should read it fully, t
 | Audio retention | Keep all audio for every session (disk is plentiful: 256 GB) |
 | Auth | None. The container port is published to `127.0.0.1` on the potato only; `tailscale serve` is the sole way in |
 | Approved dependencies | Beyond the stack above: `@fontsource/lexend` (bundled font) and `lucide-svelte` icons. Approved by Autumn. Anything else needs asking |
+| Call simulator | Pre-recorded phone-call scenarios, voiced once on the Mac by a high-quality speech service, played from the app with no runtime outside calls. Audio not committed to git. Details in `docs/call-simulator.md` |
 | Look and feel | Warm, subtle bird theme. Font: Lexend (bundled, not loaded from a CDN). Icons: Lucide. **No emojis anywhere** (UI, docs, lessons, commit messages) |
 | Pitch display | Hz plus nearest note name, always shown together |
 | Session feel tags | After each session, optional tap-to-select chips (voice feel and daily context). Fixed list in v1, no free text |
@@ -178,7 +179,7 @@ Everything is keyed by **client-generated UUIDs** so retries are idempotent.
 
 | Table | Key columns |
 |---|---|
-| `sessions` | `id` (uuid), `started_at`, `ended_at`, `kind` (`practice` / `lesson` / `weekly_passage` / `free`), `lesson_id?`, `passage_id?`, `feel_tags` (json array of tag ids), `duration_s`, `sample_rate`, `audio_path`, `series_path`, `settings_snapshot` (json), `summary` (json) |
+| `sessions` | `id` (uuid), `started_at`, `ended_at`, `kind` (`practice` / `lesson` / `weekly_passage` / `free` / `call_sim`), `scenario_id?`, `lesson_id?`, `passage_id?`, `feel_tags` (json array of tag ids), `duration_s`, `sample_rate`, `audio_path`, `series_path`, `settings_snapshot` (json), `summary` (json) |
 | `lesson_progress` | `lesson_id`, `completed_at`, `session_id?` |
 | `weekly_reports` | `week_start`, `session_id`, `stats` (json), `plan` (json) |
 | `settings` | single row, json (targets, ramp, ceiling, caps, f0 search range) |
@@ -305,6 +306,15 @@ Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autum
 - Seed content per the authoring rules; all `status: draft`.
 
 **Done when:** a full lesson can be run end to end and recorded as a `kind=lesson` session; lesson progress persists.
+
+### Phase 6b: Call simulator
+
+- Authoring tool `tools/callsim/` (Mac only, Python/uv): draft, voice, preview, bundle. Cost controls and spending cap.
+- App: scenario picker, in-call screen, automatic turn-taking from voice activity with a Next button as backup, hang up anytime.
+- `call_sim` sessions in history, replay with both sides.
+- Full design in `docs/call-simulator.md`. Resolve its **Open checks** (speech provider, terms, cost) before building.
+
+**Done when:** one scenario can be authored, voiced, previewed and bundled, and a full call runs from the installed app and is saved and replayed.
 
 ### Phase 7: Experimental weight measure
 

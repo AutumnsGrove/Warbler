@@ -48,11 +48,7 @@ I read the two systematic reviews and the TruVox paper cited in the plan, plus p
 
 You asked for more variety, so this is 30 lessons, above the plan's original 14 to 20. "Needs" shows what in the app must exist first.
 
-**Release in waves.** Writing 30 careful, sourced lessons is a lot, and each needs a human read. Proposed waves so you can start using the app early:
-
-- **Wave 1 (first release of Phase 6):** the 3 health basics, pitch 1 to 4, resonance 1, quality 2, prosody 1, transfer 1. About 12 lessons.
-- **Wave 2:** the rest of pitch, resonance (non-chart), quality, prosody, articulation.
-- **Wave 3:** chart-based resonance lessons (after Phase 4), and the remaining transfer lessons.
+**All 30 are written and reviewed before the app is built** (your call). Drafting happens in batches of about five. You read each batch, and we approve or tweak it before the next. Lesson xfer-05 connects to the call simulator (`docs/call-simulator.md`).
 
 ### Health (5)
 
@@ -182,7 +178,9 @@ Tier C (ideas only):
 2. **More lessons:** confirmed. 30 lessons, released in waves.
 3. **Home-only, no SLP:** confirmed. The safety screen still mentions a speech-language pathologist for persistent problems, because that is the safety net of last resort and the plan's safety rules require it. It stays a gentle mention, not a requirement or a sales pitch. Because there is no professional listening, the plan leans harder on the built-in guardrails: conservative ramp, session cap, break prompts, tag-based rest note. Lessons also avoid anything that looks like clinical technique (such as hands-on neck or larynx manipulation).
 
-## 7. Still open
+## 7. Working process
 
-1. **Wave split.** Are the three waves above fine, or would you rather have all 30 before using lessons at all?
-2. **Pace of writing.** I can draft lessons in batches of about 5 for your review. Do you want to read every one before it is merged, or skim and approve in bulk?
+1. I draft a batch of about 5 lessons as files in `web/content/lessons/`, status `draft`, with sources.
+2. You read them and say approve or tweak. I revise.
+3. Approved lessons are committed and pushed. Then the next batch.
+4. All 30 are done before Phase 0 starts. Approved by you means content-reviewed by you, not clinically reviewed; they stay marked `draft` in the app, as the plan requires.
