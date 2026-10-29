@@ -243,7 +243,7 @@ Each lesson follows the flow **warm-up → one concept → guided practice with 
 - Draft lessons only from the cited public sources in [References](#references) and similar open material. **Do not invent clinical protocols or claims.**
 - Every lesson carries `sources` and starts as `status: draft`. The UI shows a subtle "draft, unreviewed" marker. A human (or an SLP, if the user chooses to book a session) promotes lessons to `reviewed`.
 - Topic arc for the seed curriculum: vocal health and warm-ups, pitch, resonance, vocal quality, intonation/prosody, articulation, carry-over to everyday speech.
-- Include the stop-if-strained guidance in every practice step.
+- The stop-if-strained guidance appears on every practice step through one fixed app banner, not repeated in lesson prose.
 - Seed with roughly 30 lessons, released in waves (see `docs/lessons.md`), and 2–3 weekly reading passages (the main weekly passage is Option A in `docs/passages.md`). More can be added later as pure content.
 
 ### Weekly passage and coach (rule-based)

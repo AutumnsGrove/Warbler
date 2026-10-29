@@ -44,6 +44,14 @@ I read the two systematic reviews and the TruVox paper cited in the plan, plus p
 7. **No emojis. No promises. No timelines** ("in 4 weeks you will...").
 8. **Our own wording and our own exercise names.** Source ideas are paraphrased, never copied.
 
+### Writing style (from Autumn's feedback on Batch 1)
+
+- **Active, not passive.** Practice steps are things to do that you can see on the graph (hold a hum steady, slide up and down, make the line move). Avoid "notice how...", "think about...", "take a moment to feel...".
+- **Short and direct.** Short sentences, plain words, no padding. Cut anything that does not help you do the step.
+- **Friendly, not gushing.** No soft reassurance phrases, no "think of it as a mirror" metaphors.
+- **Safety stated once.** See the banner note in the template section. No repeated stop or rest reminders.
+- Aim for 6 to 8 minutes. Shorter is fine.
+
 ## 3. Proposed curriculum (30 lessons)
 
 You asked for more variety, so this is 30 lessons, above the plan's original 14 to 20. "Needs" shows what in the app must exist first.
@@ -160,7 +168,7 @@ steps:
 Conventions:
 
 - `(30s)`, `(90s)` at the end of a line (or the start of a bullet) set that step's timer.
-- The stop line is mandatory at the top of every Practice section. A check fails the build if it is missing.
+- **The stop line is not written in lesson text.** The app shows one small, fixed banner on every Practice step ("Stop if anything hurts or strains."), so the safety guidance is always present without lessons repeating it. Lessons do not add "rest and drink water" reminders to Done sections or elsewhere. Lesson 1 explains the warning signs once. A build check fails if a lesson's practice step is not rendered with the banner.
 - `used_for` says which statement a source supports. Every factual claim in a lesson must be traceable to one.
 
 ## 5. Sources used (all checked in this planning pass)
@@ -193,7 +201,7 @@ Tier C (ideas only):
 
 | Batch | Lessons | Status |
 |---|---|---|
-| 1 | health-01 to health-05 | Drafted, awaiting Autumn's review |
+| 1 | health-01 to health-05 | Redrafted after feedback (more active, fewer reminders), awaiting review |
 | 2 | pitch-01 to pitch-05 | Not started |
 | 3 | pitch-06, res-01 to res-04 | Not started |
 | 4 | res-05, qual-01 to qual-03, pros-01 | Not started |

@@ -3,7 +3,7 @@ id: health-05-checking-for-tension
 title: Checking for tension
 topic: health
 order: 50
-minutes: 10
+minutes: 8
 status: draft
 needs_phase: 1
 prereq: [health-01-easing-in]
@@ -13,11 +13,11 @@ sources:
   - id: hull-nhs-voice
     url: https://www.hey.nhs.uk/patient-leaflet/your-voice-and-how-to-look-after-it/
     tier: B
-    used_for: open relaxed posture, avoiding neck twisting or tilting, breathing, sleep
+    used_for: open relaxed posture, avoiding neck twisting or tilting
   - id: nidcd-voice-care
     url: https://www.nidcd.nih.gov/health/taking-care-your-voice
     tier: B
-    used_for: supporting the voice with breath instead of the throat alone, phone posture
+    used_for: supporting the voice with breath instead of the throat alone
   - id: cuh-nhs-sovt
     url: https://www.cuh.nhs.uk/patient-information/semi-occluded-vocal-tract-exercises/
     tier: B
@@ -31,41 +31,33 @@ steps:
 
 ## Warm-up
 
-About 2 minutes.
-
-- (30s) Sit upright and relaxed, feet flat, legs and arms uncrossed. Sip some water.
-- (90s) Gentle straw bubbles or soft bubbles through loosely closed lips, as in the warm-up lesson. Keep it easy.
+- (30s) Sit upright with your feet flat, and sip some water.
+- (60s) Do the straw or lip bubbles from the warm-up lesson, easy and light.
 
 ## Learn
 
-About 3 minutes.
+When you speak, your jaw, tongue, neck and shoulders all join in. Too much squeezing in any of them makes the voice harder to use. The NHS exercise leaflet describes its exercises as a way to release excess tension from the muscles used for your voice.
 
-**Why tension matters.** When you speak, your jaw, tongue, neck and shoulders all have a say. Too much squeezing in any of them can make the voice harder to use. The NHS exercise leaflet describes its breathing exercises as a way to release excess tension from the muscles used to produce your voice.
+Four things to check:
 
-**What to check.** Spend a moment on each of these:
+- **Jaw.** Teeth slightly apart, tongue resting in your mouth.
+- **Shoulders.** Down, not creeping up toward your ears.
+- **Neck.** Head balanced over your shoulders, not held twisted or tilted (NHS leaflet).
+- **Breath.** NIDCD advises supporting your voice with breath instead of relying on the throat alone. Aim for a calm, low breath that moves your belly and ribs more than your shoulders.
 
-- **Sitting.** Open and relaxed, as in the earlier lessons. The NHS leaflet advises uncrossed legs and arms and an upright position.
-- **Neck.** Avoid holding your head twisted or tilted for long. Keep your head balanced over your shoulders.
-- **Shoulders.** Do they creep up toward your ears when you speak? Let them drop.
-- **Jaw.** Are your teeth clenched? Let your teeth part slightly and your tongue rest in your mouth.
-- **Breath.** NIDCD advises supporting your voice with deep breaths instead of relying on the throat alone. Aim for a calm, low breath that moves your belly and ribs more than your shoulders.
-
-**What this lesson will not ask of you.** There is no pressing on your throat, no pushing or holding your neck, and no stretching that hurts. Everything is light and gentle. If something feels like it is pulling or straining, stop.
+Everything here is light. Do not press on your throat or neck, and do not force any stretch.
 
 ## Practice
 
-About 5 minutes. **Stop if you feel pain, strain, tightness or hoarseness. Rest and drink some water.**
+Your volume and pitch are on, with no goals.
 
-No goals are shown. You can see your volume and pitch, only for curiosity.
-
-1. **Scan from the top.** Take 15 seconds each for jaw, shoulders, and breath. For the jaw: let it hang loose, teeth apart, lips closed. For the shoulders: lift them toward your ears, then let them drop. For the breath: place one hand on your belly and breathe slowly so the hand moves a little. (60s)
-2. **Say a sentence with tension.** Say a short sentence while gently raising your shoulders and clenching your jaw slightly, only a little. Notice how it feels. Release right away. (30s)
-3. **Say it relaxed.** Say the same sentence with a loose jaw, dropped shoulders and a calm breath. Notice any difference in how it feels. Watch the graph if you like, but the feeling matters more than the numbers. (60s)
-4. **Repeat three times.** Alternate once more, then settle on the relaxed version. (60s)
-5. **Phone check.** Notice how you are holding your phone right now. Try holding it in your hand, with your head level. (30s)
+1. **Release.** Let your jaw hang loose with your lips closed. Lift your shoulders to your ears, then drop them. Put a hand on your belly and breathe so that the hand moves. (60s)
+2. **Tense round.** Say one short sentence with your shoulders slightly raised and your jaw slightly clenched. Keep it mild. (20s)
+3. **Relaxed round.** Say the same sentence with a loose jaw, low shoulders and a calm breath. (20s)
+4. **Compare.** Do the tense and relaxed rounds twice more. Look at both lines on the graph and see if the relaxed ones look different. (90s)
+5. **Hold the relaxed way.** Say three more sentences the relaxed way. Keep your hand on your belly. (60s)
 
 ## Done
 
 - Summary of the session.
 - Feel tags (optional).
-- Reminder: if you noticed a lot of tension, that is useful to know, and a good reason to go gently. Sip some water and rest your voice.
