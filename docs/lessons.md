@@ -184,10 +184,13 @@ Found while drafting. Each is small, and each is now part of the plan's Phase 1 
 | **Base note** | pitch-02 onward | Defaults to the note nearest your speaking pitch measured in pitch-01. You can pick another |
 | **Stage labels** | pitch-04 | A large label such as "Stage 2 of 3: chant" |
 | **Hidden target** | pitch-04 stage 3 | The target line is hidden while you speak, then the result is shown |
+| **Instant replay** | res-01 to res-03 | A replay button that plays back the last few seconds of your voice, so you can hear your own resonance (you hear yourself differently while speaking). Needs a short rolling audio buffer, and fits with Phase 2's audio handling |
+| **Start-to-end change** | pitch-06 | Per sentence, the difference in semitones between the start and end of the pitch line |
 
 ## 5. Sources used (all checked in this planning pass)
 
 Tier A:
+- Ladd (1984), Declination: a review and some hypotheses (abstract read; full paper not): https://www.cambridge.org/core/journals/phonology/article/abs/declination-a-review-and-some-hypotheses/DF00BEC50AD41E8387DB19EA50D7715F
 - Systematic review, speech therapy for transgender women: https://pmc.ncbi.nlm.nih.gov/articles/PMC10553375
 - Systematic review and meta-analysis: https://pmc.ncbi.nlm.nih.gov/articles/PMC10363306
 - TruVox (pitch training software, 5 structured exercises): https://formative.jmir.org/2025/1/e73841
@@ -200,7 +203,8 @@ Tier B:
 - NHS (Cambridge), SOVT exercises leaflet: https://www.cuh.nhs.uk/patient-information/semi-occluded-vocal-tract-exercises/
 - Rainbow Health Ontario, speech guidelines: https://www.rainbowhealthontario.ca/wp-content/uploads/2009/05/Guidelines-speech.pdf
 
-Tier C (ideas only):
+Tier C (ideas only, and standard-fact references not yet checked against a textbook):
+- Voice Science lexicon, formants: https://www.voicescience.org/lexicon/formant/ (read in full; author not confirmed. Check against Ladefoged and Johnson, *A Course in Phonetics*, before review.)
 - Connected Speech Pathology, Seattle Voice Lab, Emerge Pediatric Therapy and similar clinician pages.
 
 **Not verified:** I could read the TruVox paper only through search summaries (the direct page fetch failed), and the Rainbow Health Ontario PDF and the JSLHR paper only through search excerpts. Before any lesson cites them for a specific claim, they must be read in full.
@@ -217,7 +221,7 @@ Tier C (ideas only):
 |---|---|---|
 | 1 | health-01 to health-05 | Redrafted after feedback (more active, fewer reminders), awaiting review |
 | 2 | pitch-01 to pitch-05 | Drafted, awaiting review |
-| 3 | pitch-06, res-01 to res-04 | Not started |
+| 3 | pitch-06, res-01 to res-04 | Drafted, awaiting review |
 | 4 | res-05, qual-01 to qual-03, pros-01 | Not started |
 | 5 | pros-02 to pros-04, art-01, art-02 | Not started |
 | 6 | xfer-01 to xfer-05 | Not started |
