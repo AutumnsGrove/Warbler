@@ -82,7 +82,7 @@ Rules run **in this order, top to bottom**. The first rule group that fires deci
 | Id | Fires when | Plan |
 |---|---|---|
 | A1 | In the last 7 days, 2 or more sessions were tagged **Tight** or **Scratchy** | Focus: rest and gentle health. Suggest health-03, health-04, health-05. Suggest shorter sessions and an extra rest day. Skip goal rules this week. |
-| A2 | A1 fired two weeks in a row | Same as A1, plus the line: "Tight or scratchy voice for two weeks in a row is worth getting checked by a voice professional. Hoarseness lasting more than two weeks is the point public health guidance gives for seeking care." |
+| A2 | A1 fired two weeks in a row | Same as A1, plus the line: "A tight or scratchy voice two weeks in a row is worth getting checked by a doctor who specialises in the voice, such as an ear, nose and throat doctor. Health organisations such as NIDCD list hoarseness and a strained voice as reasons to see one." |
 | A3 | You reached your session cap 3 or more times this week | Suggest shorter sessions and spreading practice over more days. Never suggests more time. |
 | A4 | The ramp was raised by you this week | A friendly reminder to check in with how your voice feels. (Does not question the change.) |
 

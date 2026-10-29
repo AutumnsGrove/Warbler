@@ -291,9 +291,9 @@ Analysis will improve (Phase 4 formants, bug fixes, a changed formant ceiling). 
 - A command `warbler verify` (run inside the container) walks all records and files: missing files, strays, fingerprints that no longer match, and database integrity. It can be run before and after backups and restores.
 - Nightly backups (Phase 8) use SQLite's safe snapshot, not copying a live file.
 
-## Decisions for you
+## Decisions (confirmed)
 
-1. **Undo window for deleting.** Right now a delete is permanent. Option: deleted sessions go to a hidden "Recently deleted" for 14 days before being removed for good. Safer against accidents; costs a little disk and one more screen. This is a trade between "delete means gone" and "oops-proof". My lean is to include it, with an "Empty now" button.
-2. **Default ramp.** The plan says conservative. I used 25%. You can change it in Settings. Is 25% a fair starting suggestion?
-3. **Tailscale-user lock** (item 5 in the security section). Adds a second check that only your Tailscale identity can use the API. Small to build; slight chance of annoyance if you ever share the tailnet with someone. I lean yes.
-4. **Import/export now or later.** I put import in Phase 3 with export. It is not strictly needed until Phase 8's restore test, but building both together is cheaper. Okay?
+1. **Undo window for deleting:** yes. A deleted session goes to a hidden "Recently deleted" list for 14 days, with an "Empty now" button, then is removed for good. The delete confirm dialog says so. Adds a `deleted_at` column on `sessions`; the API's list and chart endpoints ignore deleted rows, and a new `POST /api/sessions/:id/restore` brings one back. Files are removed only when the 14 days pass (or on "Empty now").
+2. **Default ramp:** 25%, shown as a suggestion during setup, always changeable.
+3. **Tailscale identity lock:** yes. `tailscale serve` adds a header naming the signed-in Tailscale user. The server will refuse API requests without it. In plain terms: a second lock on the door, so even something on the potato itself cannot talk to the app unless the request came through Tailscale. It needs one setting: the allowed Tailscale login. It will be checked in Phase 0 that the header really arrives with the installed version of Tailscale.
+4. **Import with export:** yes, both in Phase 3.

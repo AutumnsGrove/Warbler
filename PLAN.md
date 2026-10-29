@@ -215,7 +215,7 @@ GET    /api/weekly/current      this week's report/plan (computes if absent)
 GET    /api/export              zip of db + audio + series
 ```
 
-Server rules: publish the port on `127.0.0.1` only (Docker `-p 127.0.0.1:PORT:8080`); cap request body size sensibly (sessions up to ~100 MB); validate WAV headers; never trust client paths.
+Server rules: require the Tailscale identity header from `tailscale serve` (see `docs/data-api.md`); deleted sessions sit in "Recently deleted" for 14 days; publish the port on `127.0.0.1` only (Docker `-p 127.0.0.1:PORT:8080`); cap request body size sensibly (sessions up to ~100 MB); validate WAV headers; never trust client paths.
 
 ## Lessons and weekly coach
 
@@ -289,7 +289,7 @@ Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autum
 ### Phase 3: Progress charts
 
 - Weekly aggregates endpoint; charts for median F0 and spread over time.
-- Export endpoint (zip).
+- Export endpoint (zip) and import endpoint (restore from a zip).
 
 **Done when:** charts reflect real stored sessions; export produces a valid zip.
 

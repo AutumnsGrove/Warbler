@@ -117,22 +117,26 @@ You asked for more variety, so this is 30 lessons, above the plan's original 14 
 
 ## 4. Lesson file template
 
-Matches the frontmatter in `PLAN.md`. Body sections are fixed so the app can render every lesson the same way.
+Matches the frontmatter in `PLAN.md`, with extras the app needs. Body sections are fixed so the app can render every lesson the same way.
 
 ```markdown
 ---
 id: pitch-02-matching-a-pitch
+title: Matching a pitch
 topic: pitch
-order: 50
+order: 70
 minutes: 10
 status: draft
 needs_phase: 1
-prereq: []            # lesson ids that must be done first
-revisit: no           # yes = coach may offer it again after a few weeks
+prereq: []                    # lesson ids that must be done first
+revisit: no                   # yes = coach may offer it again after a few weeks
+live_feedback: pitch_goals    # none | volume_only | just_my_voice | pitch_no_goals
+                              # | volume_and_pitch_no_goals | pitch_goals | chart
 sources:
   - id: truvox
     url: https://formative.jmir.org/2025/1/e73841
     tier: A
+    used_for: what the claim in the lesson relies on
 steps:
   - type: warmup
   - type: learn
@@ -141,18 +145,23 @@ steps:
 ---
 
 ## Warm-up
-(2 minutes. Always the same gentle sounds, linked to health-02.)
+- (30s) Timed action. A line starting with a time in brackets becomes a step with a timer.
 
 ## Learn
-(One idea, plain words, explain every technical term.)
+(One idea, plain words, every technical term explained.)
 
 ## Practice
-Stop if you feel pain, strain, tightness or hoarseness. Rest and drink some water.
-(Guided steps with live feedback. Minutes per step.)
+**Stop if you feel pain, strain, tightness or hoarseness. Rest and drink some water.**
 
 ## Done
-(Summary, then the feel-tag chips, then rest reminder.)
+(Summary, feel-tag chips, rest reminder.)
 ```
+
+Conventions:
+
+- `(30s)`, `(90s)` at the end of a line (or the start of a bullet) set that step's timer.
+- The stop line is mandatory at the top of every Practice section. A check fails the build if it is missing.
+- `used_for` says which statement a source supports. Every factual claim in a lesson must be traceable to one.
 
 ## 5. Sources used (all checked in this planning pass)
 
@@ -180,7 +189,18 @@ Tier C (ideas only):
 2. **More lessons:** confirmed. 30 lessons, released in waves.
 3. **Home-only, no SLP:** confirmed. The safety screen still mentions a speech-language pathologist for persistent problems, because that is the safety net of last resort and the plan's safety rules require it. It stays a gentle mention, not a requirement or a sales pitch. Because there is no professional listening, the plan leans harder on the built-in guardrails: conservative ramp, session cap, break prompts, tag-based rest note. Lessons also avoid anything that looks like clinical technique (such as hands-on neck or larynx manipulation).
 
-## 7. Working process
+## 7. Batch status
+
+| Batch | Lessons | Status |
+|---|---|---|
+| 1 | health-01 to health-05 | Drafted, awaiting Autumn's review |
+| 2 | pitch-01 to pitch-05 | Not started |
+| 3 | pitch-06, res-01 to res-04 | Not started |
+| 4 | res-05, qual-01 to qual-03, pros-01 | Not started |
+| 5 | pros-02 to pros-04, art-01, art-02 | Not started |
+| 6 | xfer-01 to xfer-05 | Not started |
+
+## 8. Working process
 
 1. I draft a batch of about 5 lessons as files in `web/content/lessons/`, status `draft`, with sources.
 2. You read them and say approve or tweak. I revise.
