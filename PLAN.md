@@ -52,6 +52,7 @@ This file is the source of truth for the build. An agent should read it fully, t
 | Scope | Everything in v1, including daily lessons |
 | Audio retention | Keep all audio for every session (disk is plentiful: 256 GB) |
 | Auth | None. The container port is published to `127.0.0.1` on the potato only; `tailscale serve` is the sole way in |
+| Approved dependencies | Beyond the stack above: `@fontsource/lexend` (bundled font) and `lucide-svelte` icons. Approved by Autumn. Anything else needs asking |
 | Look and feel | Warm, subtle bird theme. Font: Lexend (bundled, not loaded from a CDN). Icons: Lucide. **No emojis anywhere** (UI, docs, lessons, commit messages) |
 | Pitch display | Hz plus nearest note name, always shown together |
 | Session feel tags | After each session, optional tap-to-select chips (voice feel and daily context). Fixed list in v1, no free text |
@@ -237,7 +238,7 @@ Each lesson follows the flow **warm-up → one concept → guided practice with 
 - Every lesson carries `sources` and starts as `status: draft`. The UI shows a subtle "draft, unreviewed" marker. A human (or an SLP, if the user chooses to book a session) promotes lessons to `reviewed`.
 - Topic arc for the seed curriculum: vocal health and warm-ups, pitch, resonance, vocal quality, intonation/prosody, articulation, carry-over to everyday speech.
 - Include the stop-if-strained guidance in every practice step.
-- Seed with a modest set (roughly 14–20 lessons) and 2–3 weekly reading passages. More can be added later as pure content.
+- Seed with a modest set (roughly 14–20 lessons) and 2–3 weekly reading passages (the main weekly passage is Option A in `docs/passages.md`). More can be added later as pure content.
 
 ### Weekly passage and coach (rule-based)
 

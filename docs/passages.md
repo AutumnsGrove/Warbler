@@ -13,9 +13,13 @@ The same text every week is the point: if the words never change, differences in
 - **Everyday language**, so it feels like talking, not performing.
 - **Nothing emotionally loaded.** It should be neutral and pleasant.
 
-## Option A: The morning market
+## Option A: The morning market (CHOSEN, extended)
 
-> Every Saturday morning, I walk down to the market by the river. The air smells like warm bread and fresh flowers. A man near the entrance always sells yellow lemons, and a woman beside him plays slow music on an old violin. I usually buy a few oranges, some honey, and a small loaf of rye. Do you know what I like most? Nobody is in a hurry. People stop to talk, and the whole place feels calm. When I get home, I open the window, make some tea, and eat my breakfast slowly.
+> Every Saturday morning, I walk down to the market by the river. The air smells like warm bread and fresh flowers. A man near the entrance always sells yellow lemons, and a woman beside him plays slow music on an old violin. I usually buy a few oranges, some honey, and a small loaf of rye. Do you know what I like most? Nobody is in a hurry. People stop to talk, and the whole place feels calm.
+>
+> Last week, I met a neighbour by the cheese stall. We talked about the weather, our gardens, and the new bakery on the corner. She asked if I wanted to join her for coffee, so we found a bench in the shade and watched the boats go by. Isn't it nice when a plain morning turns into a good one? Before we left, she gave me a handful of fresh mint, and I promised to bring her some honey next time.
+>
+> When I get home, I open the window, make some tea, and eat my breakfast slowly.
 
 ## Option B: The long way home
 
@@ -25,10 +29,8 @@ The same text every week is the point: if the words never change, differences in
 
 > Last spring, I planted a small garden behind my house. I started with beans, mint, and a few tomatoes. Every morning, I would water them before making coffee. Some days, a little brown bird visited the fence and sang for a while. Would it come back tomorrow? I never knew. Slowly, the garden grew, and so did my patience. Now the tomatoes are red, the mint is everywhere, and I eat my lunch outside whenever the weather is nice.
 
-## My notes
+## Decision
 
-- All three have two questions placed mid-passage for intonation.
-- C has a gentle bird in it, which fits the theme, but A has the richest vowel variety.
-- We can ship all three and rotate monthly, but the plan says to keep one passage stable for comparison. Recommended: **ship one as the main weekly passage**, and keep the others as optional extras that are not used in the comparison.
+Option A is the weekly passage, extended to roughly 1.5 minutes. It now has three questions, spread across the text, and a calm ending. B and C stay here as optional extras for variety; they are **not** used in the week-to-week comparison.
 
-Tell me which to use, or give me a direction for a different one.
+**Freeze rule:** once the first real weekly recording is made, the passage text never changes, even by one word. Any change would break comparison with earlier weeks. If it must change, it ships as a new passage with a new id, and comparisons restart.
