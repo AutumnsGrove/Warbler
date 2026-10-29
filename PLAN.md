@@ -1,6 +1,6 @@
-# Lark: Self-Hosted Voice Training PWA
+# Warbler: Self-Hosted Voice Training PWA
 
-Working title; rename freely. A personal, private voice training tool: live pitch and resonance feedback, a daily lesson flow, weekly progress checks, and full session history. Runs on "the potato" (Le Potato SBC, arm64), served over Tailscale, used from a phone as an installed PWA.
+A personal, private voice training tool: live pitch and resonance feedback, a daily lesson flow, weekly progress checks, and full session history. Runs on "the potato" (Le Potato SBC, arm64), served over Tailscale, used from a phone as an installed PWA.
 
 This file is the source of truth for the build. An agent should read it fully, then work **one phase at a time** (see [Working agreement](#working-agreement)).
 
@@ -86,7 +86,7 @@ Key points:
 ## Repo layout
 
 ```
-lark/
+warbler/
 ├── PLAN.md
 ├── AGENTS.md                # short rules, copied from "Working agreement"
 ├── Makefile                 # dev, build, build-arm64, deploy, test
@@ -99,7 +99,7 @@ lark/
 │   ├── static/pitch-worklet.js
 │   └── content/             # lessons + passages (markdown + frontmatter)
 ├── server/                  # Go
-│   ├── cmd/lark/main.go
+│   ├── cmd/warbler/main.go
 │   ├── internal/{api,db,store}/
 │   └── migrations/
 ├── tools/validate/          # Python (uv): synthetic vowels + parselmouth comparison
