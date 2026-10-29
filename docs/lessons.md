@@ -127,6 +127,8 @@ order: 50
 minutes: 10
 status: draft
 needs_phase: 1
+prereq: []            # lesson ids that must be done first
+revisit: no           # yes = coach may offer it again after a few weeks
 sources:
   - id: truvox
     url: https://formative.jmir.org/2025/1/e73841

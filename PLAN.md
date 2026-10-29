@@ -243,6 +243,8 @@ Each lesson follows the flow **warm-up → one concept → guided practice with 
 
 ### Weekly passage and coach (rule-based)
 
+Full design in `docs/coach.md`. The coach is TypeScript in the web app (`web/src/lib/coach/`), shares the app's analysis code, and the server only stores the finished report.
+
 1. Each week the user records the same passage (`kind=weekly_passage`).
 2. The server (or client) computes stats and compares to all prior weeks.
 3. The report is plain language with a "listen to week 1 vs now" player.

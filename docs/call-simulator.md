@@ -139,7 +139,7 @@ Mockup of the in-call screen:
 
 ## Open checks (verify before building, not assumed)
 
-1. **Does OpenRouter serve ElevenLabs voices?** OpenRouter is best known as a gateway to text models. I have not confirmed it offers ElevenLabs speech, or which version name the newest model has. If it does not, the options are ElevenLabs's own API directly, or another high-quality speech service. Same authoring tool either way: the speech provider is one small swappable piece.
+1. **Does OpenRouter serve ElevenLabs voices?** Autumn reports that OpenRouter now offers ElevenLabs as a recent addition. This is her word and has not been checked by the agent. Before building, confirm the exact model name, how audio is returned, and per-character pricing from OpenRouter's own docs. If it does not, the options are ElevenLabs's own API directly, or another high-quality speech service. Same authoring tool either way: the speech provider is one small swappable piece.
 2. **Usage terms for the generated audio.** Check what the speech service's plan allows (personal use, storing, and playing back from your own server). Likely fine for private use, but we should read it, not assume.
 3. **Voice consent and licensing.** Use only the service's stock voices, never a clone of a real person.
 4. **Roughly how much it costs.** The cost depends on total characters spoken. Once we know how many scenarios and lines, the dry-run feature gives a real number before any spend.
