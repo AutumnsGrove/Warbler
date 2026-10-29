@@ -171,6 +171,20 @@ Conventions:
 - **The stop line is not written in lesson text.** The app shows one small, fixed banner on every Practice step ("Stop if anything hurts or strains."), so the safety guidance is always present without lessons repeating it. Lessons do not add "rest and drink water" reminders to Done sections or elsewhere. Lesson 1 explains the warning signs once. A build check fails if a lesson's practice step is not rendered with the banner.
 - `used_for` says which statement a source supports. Every factual claim in a lesson must be traceable to one.
 
+## 4b. App features the lessons assume
+
+Found while drafting. Each is small, and each is now part of the plan's Phase 1 scope (tell me if you want any dropped).
+
+| Feature | Used by | Notes |
+|---|---|---|
+| **Reference tone player** | pitch-02, pitch-03 | A play button that sounds the target note using the browser's built-in audio. No audio files needed |
+| **Target line with a band** | pitch-02 to pitch-05 | A flat line (or staircase) on the pitch graph with a soft band around it. Default band is one semitone either side, narrowable to half a semitone. Not a pass-or-fail zone |
+| **Round counter** | pitch-02, pitch-03 | A round completes when you hold the band for 1 second. No fail states |
+| **Saved range** | pitch-01, later pitch lessons | pitch-01 can save your lowest and highest notes (`explored_range` in settings). Later lessons place exercises inside it |
+| **Base note** | pitch-02 onward | Defaults to the note nearest your speaking pitch measured in pitch-01. You can pick another |
+| **Stage labels** | pitch-04 | A large label such as "Stage 2 of 3: chant" |
+| **Hidden target** | pitch-04 stage 3 | The target line is hidden while you speak, then the result is shown |
+
 ## 5. Sources used (all checked in this planning pass)
 
 Tier A:
@@ -202,7 +216,7 @@ Tier C (ideas only):
 | Batch | Lessons | Status |
 |---|---|---|
 | 1 | health-01 to health-05 | Redrafted after feedback (more active, fewer reminders), awaiting review |
-| 2 | pitch-01 to pitch-05 | Not started |
+| 2 | pitch-01 to pitch-05 | Drafted, awaiting review |
 | 3 | pitch-06, res-01 to res-04 | Not started |
 | 4 | res-05, qual-01 to qual-03, pros-01 | Not started |
 | 5 | pros-02 to pros-04, art-01, art-02 | Not started |
