@@ -54,6 +54,7 @@ This file is the source of truth for the build. An agent should read it fully, t
 | Auth | None. The container port is published to `127.0.0.1` on the potato only; `tailscale serve` is the sole way in |
 | Approved dependencies | Beyond the stack above: `@fontsource/lexend` (bundled font) and `lucide-svelte` icons. Approved by Autumn. Anything else needs asking |
 | Call simulator | Pre-recorded phone-call scenarios, voiced once on the Mac by a high-quality speech service, played from the app with no runtime outside calls. Audio not committed to git. Details in `docs/call-simulator.md` |
+| CI | GitHub Actions runs the automated tests on every push (no secrets, no recordings). Approved by Autumn. Any other new service needs asking |
 | Look and feel | Warm, subtle bird theme. Font: Lexend (bundled, not loaded from a CDN). Icons: Lucide. **No emojis anywhere** (UI, docs, lessons, commit messages) |
 | Pitch display | Hz plus nearest note name, always shown together |
 | Session feel tags | After each session, optional tap-to-select chips (voice feel and daily context). Fixed list in v1, no free text |

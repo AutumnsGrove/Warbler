@@ -234,9 +234,18 @@ The validation reports (numbers only, no audio) are saved in `docs/validation/` 
 - Resonance measurement from a single voice recording is hard even for experts. Where the method is weak, the app should say so, not hide it.
 - None of this makes Warbler a medical instrument.
 
-## Decisions for you
+## Decisions (confirmed)
 
-1. **Thresholds.** Are you comfortable with the proposed starting thresholds (within 3% for pitch, 8% for formants, 5% median difference against Praat), knowing we will tighten them once we see real data?
-2. **Confidence gating.** Do you agree the app should show nothing, instead of a doubtful number, when the method is unreliable?
-3. **Automatic test runs.** GitHub can run the tests for free on every push (a service called GitHub Actions). The plan says not to add services without asking. Do you want it, or should tests run only on your Mac?
-4. **Recording session.** The recordings protocol takes about 20 minutes. When we reach Phase 1 for pitch and Phase 4 for resonance, would you rather do it as one long session or two?
+1. **Starting thresholds:** approved (pitch within 3%, formants within 8%, median difference against Praat under 5%). To be tightened once real data exists.
+2. **Confidence gating:** approved. When the method is unreliable the app shows nothing instead of a doubtful number.
+3. **Automatic test runs:** approved. GitHub Actions runs `make test` on every push (see below).
+4. **Recording session:** one long session (about 20 minutes). Because pitch is validated in Phase 1 and resonance in Phase 4, the session happens **once, before Phase 1 validation**, and the same recordings are reused in Phase 4. They are stored in `local-recordings/` on your Mac. Re-record only if the phone, case or setup changes, or a new problem shows up.
+
+## Automatic test runs (GitHub Actions)
+
+- Runs on every push and pull request.
+- Runs: Go tests (with the race detector), vitest (DSP, coach, safety, copy checks), the Python synthetic-voice validation, the accessibility and no-outside-requests scans, lesson file checks.
+- Does **not** run: anything needing your private recordings (`make test-real`). Those never leave your Mac.
+- No secrets are needed. The speech-service key for the call simulator is never put into GitHub.
+- The repo is public, so these runs are free and their logs are public. Test output must therefore never print personal data, and nothing from `local-recordings/` is ever uploaded.
+- A failing run is a prompt to look, not a blocker for private notes, but a phase is not marked done while it is red.
