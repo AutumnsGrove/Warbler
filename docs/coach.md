@@ -128,7 +128,7 @@ Resonance (needs Phase 4 and a resonance zone set):
 
 ## How many lessons, how often
 
-The plan picks up to **five lessons**, in a sensible order, plus the **gentle warm-up (health-02) as the daily opener** for every lesson day. How many lesson days per week is your setting. The coach shows "Suggested: 4 short sessions this week, with rest days in between", using your own preference as the starting point. No research gives a proven dose, so this is stated as a suggestion.
+The plan picks up to **five lessons**, in a sensible order, plus the **gentle warm-up (health-02) as the daily opener** for every lesson day. How many lesson days per week is your setting. The coach shows "Suggested: 4 short sessions this week, with rest days in between. Fewer is completely fine", using your own preference as the starting point. No research gives a proven dose, so this is stated as a suggestion.
 
 ## What the report looks like
 
@@ -168,7 +168,7 @@ How this was chosen  (tap)
 | No zone set | Only Group C and D rules, plus Group A safety. Report is descriptive. |
 | Ramp changed between weeks | Each week is compared against the zone that applied **at the time**, and the report says "your ramp changed on 12 Oct". |
 | Formant ceiling changed | Formants from before and after are not directly comparable. Because all audio is stored, the coach **re-analyses older recordings** with the new setting before comparing. |
-| Week start day | Setting, default Monday. Weeks are by your phone's local time. |
+| Week start day | Setting, default Sunday. Weeks are by your phone's local time. |
 | Daylight-saving / travel | Dates stored as local dates with the session, so a week is never split wrongly. |
 | Recording fails checks repeatedly | After two failed attempts, the report offers to use the best of the attempts, flagged "lower confidence". |
 | Pitch outside the search range | Counted as missing frames, not as errors. If many frames are missing, the report suggests widening the pitch range in Settings. |
@@ -180,10 +180,10 @@ How this was chosen  (tap)
 - `constants.ts` holds every threshold (noise bands, the one-third rule, week counts) with a comment explaining the guess.
 - **Tests:** a folder of fixtures, each a small invented history of weeks. Each fixture states the plan it must produce. Tests also check the safety rules never lose to a goal rule, that the coach never suggests raising the ramp, and that wording never contains forbidden words (like "failed", "behind", "best", "worst", "too low", "too high").
 
-## Decisions for you
+## Decisions (confirmed)
 
-1. **Lesson days per week:** what should the default suggestion be? I propose 4, with rest days between.
-2. **Week start day:** Monday, or another day?
-3. **May the coach offer to lower your ramp** after a Tight/Scratchy week (you decide whether to accept)? I recommend yes.
-4. **How far back should the "listen to week 1 vs now" player let you compare?** Proposed: week 1, last week, or any chosen week.
-5. **Quiet wording check:** are you comfortable with the SLP line in rule A2? It appears only after two bad weeks in a row, and is the only mention of professional care in the coach.
+1. **Lesson days per week:** default 4, configurable. The report never counts a lower number as a miss. Wording: "Suggested: about 4 short sessions. Fewer is completely fine."
+2. **Week start:** Sunday (a setting).
+3. **Offer to lower the ramp** after a Tight or Scratchy week: yes. The coach offers, you choose.
+4. **"Listen to week 1 vs now" player:** can compare week 1, last week, or any chosen week.
+5. **Professional-care line in rule A2:** approved. Appears only after two consecutive Tight/Scratchy weeks.
