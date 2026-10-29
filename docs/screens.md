@@ -17,6 +17,9 @@ These come from the safety rules, so they apply everywhere.
 3. **Big tap targets** (at least 44 px) and readable text, because you will use it while talking, often at arm's length.
 4. **Calm motion.** Respect the phone's "reduce motion" setting.
 5. **One main action per screen.**
+6. **No emojis anywhere.** All icons come from the Lucide icon set. Symbols like check marks and arrows in these sketches stand in for Lucide icons.
+7. **Warm, bird-themed look.** Soft cream and warm neutrals, a gentle accent colour taken from a warbler's plumage (a soft yellow, for example), rounded shapes. Bird touches stay subtle: the logo, the empty-state illustrations, the loading screen. Never cartoonish.
+8. **Font: Lexend**, bundled with the app (no downloads from Google at runtime, so nothing leaves your network). Lexend was designed to be easy to read, which suits a tool used while concentrating on speaking.
 
 ## Navigation
 
@@ -29,10 +32,12 @@ A bar of five tabs at the bottom, always visible except during practice.
 │                              │
 ├──────┬──────┬──────┬────┬────┤
 │Today │Prac- │Hist- │Prog│Set-│
-│  ☀   │tice  │ory   │ress│ings│
-│      │  🎙  │  📋  │ 📈 │ ⚙  │
+│ (sun)│tice  │ory   │ress│ings│
+│      │(mic) │(list)│(ch)│(co)│
 └──────┴──────┴──────┴────┴────┘
 ```
+
+Icons in parentheses are placeholders for Lucide icons: `sun`, `mic`, `history`, `trending-up`, `settings`. Every tab has an icon **and** a text label.
 
 ---
 
@@ -168,7 +173,7 @@ The main screen. The phone should be readable at a glance while you speak.
 │ 120┤ ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ │ ← starting zone
 │    └─────────────────────────│
 │                              │
-│        198 Hz   ·  G3        │
+│       198 Hz  ·  note G3     │
 │  14 Hz below your goal zone  │
 │                              │
 │  Volume ▮▮▮▮▮▯▯▯▯▯           │
@@ -182,6 +187,7 @@ The main screen. The phone should be readable at a glance while you speak.
 What to notice:
 
 - The trace scrolls to the left over roughly the last 10 seconds.
+- The note name next to the Hz number (G3 here) is the musical note closest to your pitch. See "Note names, briefly" below.
 - Gaps in the line mean "not confident enough to draw". The app never guesses.
 - The sentence under the number is neutral. "14 Hz below your goal zone", not "too low".
 - The goal zone shown is the **ramped** zone, not the final target.
@@ -262,7 +268,7 @@ Note: the vowel chart is a dot-density picture of where your recent vowels lande
 
 ```
 ┌──────────────────────────────┐
-│  Session saved ✓             │
+│  Session saved (check)            │
 │                              │
 │  18 minutes · practice       │
 │                              │
@@ -273,10 +279,16 @@ Note: the vowel chart is a dot-density picture of where your recent vowels lande
 │  [ small pitch graph of the  │
 │    whole session ]           │
 │                              │
-│  Optional note               │
-│  ┌────────────────────────┐  │
-│  │ How did it feel?       │  │
-│  └────────────────────────┘  │
+│  How did it feel? (optional) │
+│                              │
+│  Voice                       │
+│  (Easy) (Steady) (Effortful) │
+│  (Tired) (Tight) (Scratchy)  │
+│                              │
+│  Today                       │
+│  (Warmed up) (Rested)        │
+│  (Thirsty) (Congested)       │
+│  (Noisy room)                │
 │                              │
 │  ┌────────────────────────┐  │
 │  │          Done          │  │
@@ -295,7 +307,13 @@ If saving fails, this screen shows an unmistakable state instead:
 │  [ Try again now ]           │
 ```
 
-The optional note is **not** in the current plan. It is a proposal: a free-text "how did it feel" field that helps you spot patterns (like strain on certain days). Say yes or no.
+**Feel tags** (decided):
+
+- Everything is tap-to-select chips. No typing needed. You can tap several, or none and just press Done.
+- Two groups: how your **voice** felt, and what was going on **today** (things that change how a voice behaves).
+- Tapping **Tight** or **Scratchy** shows one calm line: "Worth resting your voice for a bit. If it keeps happening, consider seeing a speech-language pathologist." No alarm, no colour change.
+- The tags are saved with the session, so History can filter by them and the Weekly report can notice patterns in plain words (for example "sessions you tagged Tight were on average 9 minutes longer").
+- The list is fixed in v1 and lives in one file, so adding or renaming chips later is a small change. Editable chips in Settings could come later if you want them.
 
 ---
 
@@ -339,7 +357,7 @@ The optional note is **not** in the current plan. It is a proposal: a free-text 
 │  Range            168–241    │
 │  Time speaking    62%        │
 │                              │
-│  Note: "felt easy today"     │
+│  Felt: Easy, Warmed up       │
 └──────────────────────────────┘
 ```
 
@@ -431,7 +449,7 @@ List, then a runner that walks through steps.
 ┌──────────────────────────────┐
 │  Lessons                     │
 │  Health & warm-ups           │
-│  ✓ Easing into your voice    │
+│  (check) Easing into your voice    │
 │  Pitch                       │
 │  ○ Finding your range        │
 │  ○ Steady pitch              │
@@ -444,7 +462,7 @@ Runner:
 
 ```
 ┌──────────────────────────────┐
-│ ● ● ○ ○   Step 2 of 4   ✕    │
+│ ● ● ○ ○   Step 2 of 4   (x)  │
 │                              │
 │  Learn                       │
 │                              │
@@ -496,10 +514,30 @@ Each "(?)" opens a one-or-two sentence plain explanation.
 
 ---
 
-## Open questions for you
+## Note names, briefly
 
-1. **Notes field** after a session: yes or no?
-2. **Bottom tabs**: is five tabs too many? Alternative: merge Practice into Today.
-3. **Passage text**: your own choice, or should the agent draft 2–3 neutral public-domain passages? (The classic "Rainbow Passage" is a standard voice-science text.)
-4. **Visual feel**: calm and minimal (soft neutrals, one accent colour), or warmer and more playful (bird theme)?
-5. **Pitch units**: Hz only, or Hz plus note names by default?
+Musical notes are letters A to G, plus a number saying which octave (higher number = higher pitch). Middle C on a piano is C4, around 262 Hz. Each time the pitch doubles you move up one octave, so A3 is 220 Hz and A4 is 440 Hz.
+
+Examples of roughly where speaking voices sit:
+
+| Hz | Note |
+|---|---|
+| 110 | A2 |
+| 165 | E3 |
+| 196 | G3 |
+| 220 | A3 |
+| 262 | C4 |
+| 330 | E4 |
+
+The app shows Hz and the note together, always. A small "What are these?" link beside the readout opens this explanation so you can learn it at your own pace. The note name is secondary text (smaller and lighter than the Hz number) until you decide you want it prominent; a Settings toggle can hide it.
+
+## Decided so far
+
+- Bottom tabs: five (Today, Practice, History, Progress, Settings).
+- Post-session feel tags: yes, chips only.
+- Look: warm, subtle bird theme. Font Lexend. Icons Lucide. No emojis.
+- Pitch display: Hz plus note name.
+
+## Still open
+
+1. **Weekly reading passage.** Not the Rainbow Passage. See `docs/passages.md` for the options.

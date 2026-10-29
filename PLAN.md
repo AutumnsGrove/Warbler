@@ -52,6 +52,9 @@ This file is the source of truth for the build. An agent should read it fully, t
 | Scope | Everything in v1, including daily lessons |
 | Audio retention | Keep all audio for every session (disk is plentiful: 256 GB) |
 | Auth | None. The container port is published to `127.0.0.1` on the potato only; `tailscale serve` is the sole way in |
+| Look and feel | Warm, subtle bird theme. Font: Lexend (bundled, not loaded from a CDN). Icons: Lucide. **No emojis anywhere** (UI, docs, lessons, commit messages) |
+| Pitch display | Hz plus nearest note name, always shown together |
+| Session feel tags | After each session, optional tap-to-select chips (voice feel and daily context). Fixed list in v1, no free text |
 | Targets | User-configurable. The app ships **no default target** and assumes no direction |
 
 ## Architecture
@@ -114,8 +117,9 @@ These are product requirements, not polish. Voice training can injure a voice wh
 2. **Session cap.** Default 30 minutes per session. Break prompt roughly every 10 minutes. Both configurable.
 3. **Stop screen.** Every practice start screen states: stop if you feel pain, strain, tightness, or hoarseness; rest and hydrate. Suggest seeing a speech-language pathologist (ideally one experienced in gender-affirming voice work) for persistent problems.
 4. **Tone of feedback.** No failure states, no red/shame colours for "off target". Neutral descriptions ("median pitch 14 Hz below your current zone"). Streaks are optional and off by default.
-5. **Numbers are estimates.** Label pitch, formants, and weight as approximate measurements, not diagnoses or "pass/fail" verdicts.
-6. **No medical claims** in any copy, including lessons.
+5. **Tight or scratchy feedback.** If the user tags a session as tight or scratchy, show one calm line suggesting rest (and an SLP if it persists). No alarm styling.
+6. **Numbers are estimates.** Label pitch, formants, and weight as approximate measurements, not diagnoses or "pass/fail" verdicts.
+7. **No medical claims** in any copy, including lessons.
 
 ## DSP specification
 
@@ -173,7 +177,7 @@ Everything is keyed by **client-generated UUIDs** so retries are idempotent.
 
 | Table | Key columns |
 |---|---|
-| `sessions` | `id` (uuid), `started_at`, `ended_at`, `kind` (`practice` / `lesson` / `weekly_passage` / `free`), `lesson_id?`, `passage_id?`, `duration_s`, `sample_rate`, `audio_path`, `series_path`, `settings_snapshot` (json), `summary` (json) |
+| `sessions` | `id` (uuid), `started_at`, `ended_at`, `kind` (`practice` / `lesson` / `weekly_passage` / `free`), `lesson_id?`, `passage_id?`, `feel_tags` (json array of tag ids), `duration_s`, `sample_rate`, `audio_path`, `series_path`, `settings_snapshot` (json), `summary` (json) |
 | `lesson_progress` | `lesson_id`, `completed_at`, `session_id?` |
 | `weekly_reports` | `week_start`, `session_id`, `stats` (json), `plan` (json) |
 | `settings` | single row, json (targets, ramp, ceiling, caps, f0 search range) |
@@ -260,7 +264,7 @@ Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autum
 - Worklet: decimate + YIN + RMS; frames to main thread.
 - Scrolling pitch trace on canvas with target/ramp band overlay, Hz and note readout.
 - Settings screen: f0 search range, ramp %, start zone, target zone, session cap. **No default zones**; first run requires the user to set them (or choose "just show me my voice").
-- Safety rules 1–5 implemented (stop screen, caps, break prompt).
+- Safety rules 1–4, 6 and 7 implemented (stop screen, caps, break prompt, neutral tone, approximate labels).
 
 **Done when:** pitch trace is stable on real speech with no obvious octave jumps; unit tests for YIN pass on synthetic tones and noisy tones; CPU use is reasonable on the phone (no heat or visible lag over 10 minutes).
 
@@ -269,6 +273,7 @@ Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autum
 - Session recorder: PCM to WAV in memory, series to binary blob, summary stats.
 - Go API: sessions, settings, audio with Range support, series, delete. SQLite migrations.
 - History page: list, open a session, replay audio with the pitch trace synced to playback.
+- Post-session feel tags (tap-to-select chips), saved with the session, plus safety rule 5 (calm rest note on Tight or Scratchy).
 
 **Done when:** a session survives app restart, replays correctly, and is deletable; `go test` covers idempotent POST and WAV validation.
 
