@@ -176,6 +176,8 @@ Do not mark formants done until this passes. A vowel chart that looks plausible 
 
 ## Data model and API
 
+The full, detailed design (tables, file formats, every endpoint, upload safety, security) is in `docs/data-api.md`. This section is the short summary.
+
 Everything is keyed by **client-generated UUIDs** so retries are idempotent.
 
 ### SQLite tables
