@@ -185,6 +185,10 @@ Found while drafting. Each is small, and each is now part of the plan's Phase 1 
 | **Stage labels** | pitch-04 | A large label such as "Stage 2 of 3: chant" |
 | **Hidden target** | pitch-04 stage 3 | The target line is hidden while you speak, then the result is shown |
 | **Instant replay** | res-01 to res-03 | A replay button that plays back the last few seconds of your voice, so you can hear your own resonance (you hear yourself differently while speaking). Needs a short rolling audio buffer, and fits with Phase 2's audio handling |
+| **Onset rise time** | qual-01 | How quickly the volume rises from silence at the start of a sound; shown as a small picture. A smooth rise means an easy start |
+| **Sustained-sound timer** | qual-02 | Times how long a steady sound lasts on one breath. No target |
+| **Pitch range used** | pros-01 | The spread of the pitch line (in semitones) for one attempt |
+| **Cloud overlay** | res-05 | Two vowel clouds overlaid with the distance between their middles |
 | **Start-to-end change** | pitch-06 | Per sentence, the difference in semitones between the start and end of the pitch line |
 
 ## 5. Sources used (all checked in this planning pass)
@@ -199,6 +203,11 @@ Tier A:
 - Immediate effects of SOVT as warm-up in singers: https://pubmed.ncbi.nlm.nih.gov/34256979/
 
 Tier B:
+- Dorset County Hospital, Easy Onsets leaflet (read in full): https://dchft.nhs.uk/leaflets/easy-onsets/
+- Dorset County Hospital, Breathing for Speech Exercises (read in full): https://dchft.nhs.uk/leaflets/breathing-for-speech-exercises/
+- Cambridge University Hospitals, Voice volume exercise sheet (read in full): https://www.cuh.nhs.uk/patient-information/voice-volume-exercise-sheet/
+- Not read: Frimley Health breath-support page (failed to load), East Lancashire vocal hygiene sheet (search summary only).
+- Note: these leaflets are written for patients assessed by a speech and language therapist. Warbler lessons adapt the ideas in our own words, keep them gentle, and leave out parts such as breath-holds.
 - NIDCD, taking care of your voice: https://www.nidcd.nih.gov/health/taking-care-your-voice
 - NHS (Cambridge), SOVT exercises leaflet: https://www.cuh.nhs.uk/patient-information/semi-occluded-vocal-tract-exercises/
 - Rainbow Health Ontario, speech guidelines: https://www.rainbowhealthontario.ca/wp-content/uploads/2009/05/Guidelines-speech.pdf
@@ -222,7 +231,7 @@ Tier C (ideas only, and standard-fact references not yet checked against a textb
 | 1 | health-01 to health-05 | Redrafted after feedback (more active, fewer reminders), awaiting review |
 | 2 | pitch-01 to pitch-05 | Drafted, awaiting review |
 | 3 | pitch-06, res-01 to res-04 | Drafted, awaiting review |
-| 4 | res-05, qual-01 to qual-03, pros-01 | Not started |
+| 4 | res-05, qual-01 to qual-03, pros-01 | Drafted, awaiting review |
 | 5 | pros-02 to pros-04, art-01, art-02 | Not started |
 | 6 | xfer-01 to xfer-05 | Not started |
 
