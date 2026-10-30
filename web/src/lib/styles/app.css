@@ -1,0 +1,151 @@
+@import '@fontsource/lexend/latin-400.css';
+@import '@fontsource/lexend/latin-500.css';
+@import '@fontsource/lexend/latin-600.css';
+
+/*
+ * Warbler's look: warm paper, a warbler-yellow accent, soft rounded shapes.
+ * Rules that matter more than taste (docs/screens.md):
+ *  - no red anywhere: nothing here is ever a "failure" colour
+ *  - tap targets at least 44px
+ *  - motion is switched off when the phone asks for reduced motion
+ */
+:root {
+	--cream: #fbf6ec;
+	--paper: #fffdf8;
+	--sand: #f1e8d3;
+	--line: #e6dac1;
+	--ink: #2b2118;
+	--muted: #6a5b49;
+	--gold: #e9b72b;
+	--gold-soft: #f7e3a0;
+	--olive: #5a6930;
+	--clay: #9a5b2c;
+	--radius: 18px;
+	--radius-small: 12px;
+	--tap: 48px;
+	--font: 'Lexend', system-ui, -apple-system, sans-serif;
+	color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--cream);
+	color: var(--ink);
+	font-family: var(--font);
+	font-size: 1rem;
+	line-height: 1.55;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+	margin: 0 0 0.5rem;
+	font-weight: 600;
+	line-height: 1.25;
+}
+
+h1 {
+	font-size: 1.6rem;
+}
+h2 {
+	font-size: 1.15rem;
+}
+
+p {
+	margin: 0 0 0.75rem;
+}
+
+a {
+	color: var(--olive);
+	text-underline-offset: 3px;
+}
+
+button,
+.button {
+	font: inherit;
+	min-height: var(--tap);
+	padding: 0.65rem 1.25rem;
+	border-radius: var(--radius-small);
+	border: 1.5px solid var(--ink);
+	background: var(--paper);
+	color: var(--ink);
+	font-weight: 500;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	text-decoration: none;
+}
+
+button.primary,
+.button.primary {
+	background: var(--gold);
+	border-color: var(--ink);
+}
+
+button:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+button:focus-visible,
+a:focus-visible {
+	outline: 3px solid var(--olive);
+	outline-offset: 3px;
+}
+
+.card {
+	background: var(--paper);
+	border: 1.5px solid var(--line);
+	border-radius: var(--radius);
+	padding: 1.1rem 1.15rem;
+	margin-bottom: 1rem;
+}
+
+.muted {
+	color: var(--muted);
+}
+
+.small {
+	font-size: 0.875rem;
+}
+
+.note {
+	background: var(--sand);
+	border-radius: var(--radius-small);
+	padding: 0.7rem 0.9rem;
+	font-size: 0.925rem;
+}
+
+dl.facts {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: 0.35rem 1rem;
+	margin: 0 0 0.75rem;
+}
+dl.facts dt {
+	color: var(--muted);
+}
+dl.facts dd {
+	margin: 0;
+	word-break: break-word;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	* {
+		transition: none !important;
+		animation: none !important;
+	}
+}

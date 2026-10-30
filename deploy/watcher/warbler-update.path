@@ -1,0 +1,12 @@
+[Unit]
+Description=Start the Warbler update watcher when the app asks for a check or an update
+
+[Path]
+# The app writes one of these files from Settings. The watcher deletes them on
+# every exit path, so this is an edge trigger, not a standing condition.
+PathExists=@INSTALL_DIR@/update-signal/check
+PathExists=@INSTALL_DIR@/update-signal/requested
+Unit=warbler-update.service
+
+[Install]
+WantedBy=multi-user.target

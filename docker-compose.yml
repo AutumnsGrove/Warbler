@@ -1,0 +1,38 @@
+# Warbler on the potato. This file sits at the repository root, like Polaris's,
+# because Meridian's "compose" targets run `docker compose` in the project
+# folder.
+#
+# Updates: the image is pinned by digest through WARBLER_IMAGE in .env, which
+# the host update watcher (deploy/watcher/update.sh) rewrites. Unset, it
+# defaults to the floating :latest tag, which is fine for a first start.
+# See docs/update.md.
+services:
+  warbler:
+    build: .
+    image: ${WARBLER_IMAGE:-ghcr.io/autumnsgrove/warbler:latest}
+    restart: unless-stopped
+    # Runs as the same user that owns ./data and ./update-signal on the host.
+    user: "${WARBLER_UID:-1000}:${WARBLER_GID:-1000}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: ["/tmp"]
+    environment:
+      # The identity lock (docs/data-api.md). "log" records whether the
+      # Tailscale header arrives without refusing anything; "enforce" refuses
+      # requests without it. Switch from log to enforce once verified.
+      - WARBLER_LOCK=${WARBLER_LOCK:-enforce}
+      - WARBLER_ALLOWED_LOGINS=${WARBLER_ALLOWED_LOGINS:-}
+      - WARBLER_ALLOWED_HOSTS=${WARBLER_ALLOWED_HOSTS:-}
+      # Shown in Settings. Fixed: it should say how the process really runs.
+      - WARBLER_DEPLOYMENT=docker
+    ports:
+      # Loopback only. `tailscale serve` is the way in from the phone. Meridian
+      # and the update watcher reach /healthz on this port from the host.
+      - "127.0.0.1:${WARBLER_PORT:-8892}:8080"
+    volumes:
+      # Everything Warbler keeps (database, recordings) lives here, in a plain
+      # host folder so backups and the update watcher can reach it.
+      - ./data:/data
+      # The mailbox shared with the host update watcher.
+      - ./update-signal:/update-signal

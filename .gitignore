@@ -1,0 +1,30 @@
+# Runtime state (on the potato, in the install folder)
+/data/
+/update-signal/
+/.env
+/.update-watcher.lock
+
+# Personal recordings and settings. Never commit these.
+/local-recordings/
+*.wav
+*.local.*
+
+# Generated call-simulator audio and keys (see docs/call-simulator.md)
+/tools/callsim/out/
+/tools/callsim/.cache/
+
+# Go
+/bin/
+*.test
+*.out
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

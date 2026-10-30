@@ -1,0 +1,4 @@
+{
+  "_comment": "Add the path unit to /etc/meridian/observe.json so Meridian reports whether Warbler's update watcher is installed. Match the exact shape of the entries already in that file.",
+  "units": ["warbler-update.path"]
+}

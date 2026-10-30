@@ -76,7 +76,7 @@ If a design document and this file disagree, stop and ask Autumn which is right,
 | Audio retention | Keep all audio for every session (disk is plentiful: 256 GB) |
 | Deleting | Deleted sessions sit in "Recently deleted" for 14 days, then are removed for good ("Empty now" available) |
 | Auth | No passwords. The container port is published to `127.0.0.1` on the potato only; `tailscale serve` is the sole way in. The server also requires the Tailscale identity header |
-| Approved dependencies | Beyond the stack above: `@fontsource/lexend` (bundled font) and `lucide-svelte` icons. Anything else needs asking |
+| Approved dependencies | Beyond the stack above: `@fontsource/lexend` (bundled font) and `@lucide/svelte` icons (the maintained successor of `lucide-svelte`, same icon set). Build-only: `cookie`, pinned because SvelteKit's build step needs it under pnpm. Anything else needs asking |
 | Services | GitHub (repo, public) and GitHub Actions (tests on every push; no secrets, no recordings). The call-simulator speech service is Mac-only. Any other new service needs asking |
 | Look and feel | Warm, subtle bird theme. Font: Lexend (bundled). Icons: Lucide. **No emojis anywhere** (UI, docs, lessons, commit messages) |
 | Pitch display | Hz plus nearest note name, always shown together |
@@ -157,7 +157,9 @@ warbler/
 ├── tools/callsim/           # Python (uv), Mac only: draft, voice, preview, bundle call audio
 ├── local-recordings/        # Autumn's own recordings. In .gitignore. Never committed
 ├── Dockerfile
-└── deploy/                  # docker-compose.yml, install.sh, watcher/ (update.sh, systemd units, tests), meridian/ (config snippets), tailscale serve notes
+├── docker-compose.yml       # at the root, like Polaris, so Meridian's compose actions find it
+├── scripts/                 # repo helper scripts (no-outside-addresses check)
+└── deploy/                  # install.sh, watcher/ (update.sh, systemd units, tests), meridian/ (config snippets)
 ```
 
 ## Safety rules (non-negotiable)
@@ -232,7 +234,7 @@ The full design (tables, file formats, every endpoint, upload safety, security, 
 - **Files:** `data/audio/{id}.wav` (WAV mono 16-bit, 16 kHz, one constant), `data/series/{id}.wbs.gz` (compact per-frame record, versioned format), `data/scenarios/` (call audio).
 - **Upload:** the phone saves a pending copy first, uploads, and deletes the copy only after the server confirms matching fingerprints. The server writes files first, then the database record, and sweeps strays at start-up.
 - **Endpoints** (see `docs/data-api.md` for the full list): `/healthz` (unlocked, version only), health, version and update (see `docs/update.md`), settings, sessions (create, list, get, edit tags, delete, restore), session audio (with Range) and series, analysis replacement for re-analysis, progress, lessons, weekly reports, scenarios, export, import.
-- **Server rules:** require the Tailscale identity header (except `/healthz`, and `/api/busy` which answers loopback only); allow only the app's own Host names; no CORS; strict content policy (own files only); body size limit about 100 MB; validate WAV headers; never trust client paths; publish the container port on `127.0.0.1` only; minimal logs with no personal data.
+- **Server rules:** require the Tailscale identity header (except `/healthz` and `/api/busy`, which are called on the potato itself and return nothing personal); allow only the app's own Host names; no CORS; strict content policy (own files only); body size limit about 100 MB; validate WAV headers; never trust client paths; publish the container port on `127.0.0.1` only; minimal logs with no personal data.
 
 ## Lessons, coach and call simulator
 
@@ -269,7 +271,7 @@ Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autum
 Detailed task list and the phone test checklist are in `docs/phase-0.md`; the update design is in `docs/update.md`.
 
 - Scaffold repo, Makefile, SvelteKit (static/SPA, pnpm), Go server embedding the build, `.gitignore` (including `local-recordings/`, `data/`), `AGENTS.md`, `NOTES.md`.
-- Dockerfile and compose file matching Polaris (multi-stage, minimal final image, non-root, health check, loopback port 8892, `restart: unless-stopped`, update-signal mount).
+- Dockerfile and compose file matching Polaris (multi-stage, distroless final image of about 3.5 MB, non-root, read-only, health check, loopback port 8892, `restart: unless-stopped`, update-signal mount). **Built and smoke-tested locally.**
 - GitHub Actions: tests on every push; build and publish a multi-arch image (`linux/amd64`, `linux/arm64`) to `ghcr.io/autumnsgrove/warbler` from `main`, with the `r<count>.<sha>` version stamped in.
 - **In-app update mechanism** per `docs/update.md`: `/healthz`, `/api/version`, check/start/status endpoints, `/api/busy`, a Settings "About" section; `deploy/watcher/` (script, path/service/timer units, tests); `deploy/install.sh`; `deploy/meridian/` snippets.
 - `tailscale serve` to the container on the potato and to the Vite dev server for phone testing. Check `tailscale serve --help` on the installed version.

@@ -1,0 +1,11 @@
+{
+  "_comment": "Add this entry inside \"targets\" in /etc/meridian/targets.json (root-owned). Meridian then shows Start, Stop, Restart and Update for Warbler.",
+  "warbler": {
+    "kind": "compose",
+    "dir": "/home/autumn/Warbler",
+    "service": "warbler",
+    "actions": ["start", "stop", "restart", "update"],
+    "criticality": "low",
+    "update": { "kind": "unit", "unit": "warbler-update.service" }
+  }
+}

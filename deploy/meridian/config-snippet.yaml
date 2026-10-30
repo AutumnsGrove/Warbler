@@ -1,0 +1,22 @@
+# Add this under `services:` in ~/Meridian/config.yaml. It follows the Polaris
+# entry: a health probe on /healthz, the build version as a vital, and the
+# control actions allowed by /etc/meridian/targets.json.
+#
+# Replace the url with the address you open Warbler at on your phone.
+  - id: warbler
+    name: Warbler
+    section: everyday
+    icon: mic
+    description: private voice practice
+    url: https://lepotato.taild95077.ts.net:8892
+    probes:
+      health:
+        kind: http_json
+        url: http://localhost:8892/healthz
+        path: status
+        equals: ok
+      vitals:
+        - {kind: json_field, label: build, url: "http://localhost:8892/healthz", path: version}
+    control:
+      target: warbler
+      actions: [restart, stop, start, update]

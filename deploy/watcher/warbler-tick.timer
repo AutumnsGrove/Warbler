@@ -1,0 +1,10 @@
+[Unit]
+Description=Every few minutes, show the Warbler update watcher is alive and catch any missed request
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=10min
+Unit=warbler-tick.service
+
+[Install]
+WantedBy=timers.target
