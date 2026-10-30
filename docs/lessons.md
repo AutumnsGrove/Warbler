@@ -236,12 +236,12 @@ Tier C (ideas only, and standard-fact references not yet checked against a textb
 
 | Batch | Lessons | Status |
 |---|---|---|
-| 1 | health-01 to health-05 | Redrafted after feedback (more active, fewer reminders), awaiting review |
-| 2 | pitch-01 to pitch-05 | Drafted, awaiting review |
-| 3 | pitch-06, res-01 to res-04 | Drafted, awaiting review |
-| 4 | res-05, qual-01 to qual-03, pros-01 | Drafted, awaiting review |
-| 5 | pros-02 to pros-04, art-01, art-02 | Drafted, awaiting review |
-| 6 | xfer-01 to xfer-05 | Drafted, awaiting review |
+| 1 | health-01 to health-05 | Approved by Autumn |
+| 2 | pitch-01 to pitch-05 | Approved by Autumn |
+| 3 | pitch-06, res-01 to res-04 | Approved by Autumn |
+| 4 | res-05, qual-01 to qual-03, pros-01 | Approved by Autumn |
+| 5 | pros-02 to pros-04, art-01, art-02 | Approved by Autumn |
+| 6 | xfer-01 to xfer-05 | Approved by Autumn (articulation lessons kept) |
 
 ## 8. Working process
 

@@ -197,9 +197,11 @@ Gzip of:
 
 | Method and path | Purpose | Notes |
 |---|---|---|
-| `GET /api/health` | Is the server alive? | Returns version, database ok, free disk space, data folder writable. Used by the app and by monitoring |
+| `GET /healthz` | Liveness for Docker and Meridian | Not locked (called on the potato itself). Returns only `{"status":"ok","version":"..."}` |
+| `GET /api/health` | Detailed health, behind the lock | Returns version, database ok, free disk space, data folder writable. Used by the app and by monitoring |
 | `GET /api/settings` | Read settings | Includes `version` |
 | `PUT /api/settings` | Save settings | Must send the `version` it read. If someone saved in between (phone and Mac both open), it replies `409` and the app reloads. Avoids two devices silently overwriting each other |
+| `GET /api/version`, `POST /api/update/check`, `GET /api/update/available`, `POST /api/update/start`, `GET /api/update/status`, `GET /api/busy` | In-app updates | See `docs/update.md` |
 | `POST /api/sessions` | Save a finished session | Multipart: `meta.json`, `series.wbs.gz`, `audio.wav`. See Uploads below. Idempotent on id |
 | `GET /api/sessions` | List sessions | Filters: `from`, `to` (local dates), `kind`, `tag`. Paged with `limit` and `cursor`. Newest first. Summaries included, no files |
 | `GET /api/sessions/:id` | One session's record | Meta, summary, tags, timeline |

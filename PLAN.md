@@ -28,6 +28,7 @@ This file is the source of truth for the build. An agent should read it fully, t
 | File | What it covers | Read before |
 |---|---|---|
 | `docs/phase-0.md` | Step-by-step plan and phone test for the first gate | Phase 0 |
+| `docs/update.md` | In-app updates: Settings button, Meridian tap, host watcher, rollback | Phase 0 |
 | `docs/screens.md` | Every screen as a sketch, design rules, note-name explainer | Any UI work |
 | `docs/data-api.md` | Database tables, file formats, every endpoint, upload safety, security, settings fields | Phases 2, 3, 5 |
 | `docs/testing.md` | Test strategy, accuracy thresholds, recording protocol, safety-rule tests, CI | Phases 1, 4 and any DSP change |
@@ -54,7 +55,7 @@ If a design document and this file disagree, stop and ask Autumn which is right,
 
 - Native iOS/Android apps (this is a PWA).
 - Cloud hosting, public exposure, Tailscale Funnel, multi-user support, passwords.
-- LLM or other outside-service calls **at runtime** (in the app or on the potato). The weekly plan is rule-based. The one exception is the Mac-only authoring tool for the call simulator (see `docs/call-simulator.md`), which runs by hand, is never deployed, and only voices scripts already approved.
+- LLM or other outside-service calls **at runtime** (in the app or on the potato). The weekly plan is rule-based. The one exception is the Mac-only authoring tool for the call simulator (see `docs/call-simulator.md`), which runs by hand, is never deployed, and only voices scripts already approved. The other exception is the host-side update watcher (`docs/update.md`), which fetches a new Warbler image from GitHub only when you or Meridian ask for an update. The app container itself never goes online.
 - Offline use. The app is **online-only** (needs Tailscale connected).
 - Medical claims. This is a practice aid, not therapy.
 
@@ -63,12 +64,14 @@ If a design document and this file disagree, stop and ask Autumn which is right,
 | Topic | Decision |
 |---|---|
 | Delivery | PWA installed to iOS home screen |
-| Hosting | The potato, in Docker (matching her other services), via `tailscale serve` (tailnet-only HTTPS) |
+| Hosting | The potato, in Docker (matching Polaris: image from GHCR, pinned by digest, systemd update watcher), via `tailscale serve` (tailnet-only HTTPS). Port 8892 proposed, folder `~/Warbler` |
+| Updates | In-app Settings button, Meridian tap and manual command all run one host-side watcher with health check and rollback. The app never contacts GHCR itself. Full design in `docs/update.md` |
 | Backend | Go, single static binary, SQLite (`modernc.org/sqlite`, pure Go) |
 | Frontend | SvelteKit + TypeScript, `adapter-static`, SPA mode |
 | DSP | In the browser (AudioWorklet + Web Worker). The server never analyses audio in v1 |
 | Coach | TypeScript in the web app, rule-based, one readable rules file. The server only stores finished reports |
 | Connectivity | Online-only. No offline caching of data; only a retry buffer for an unsent session (Phase 5) |
+| Hub | Meridian (Autumn's app hub) probes `GET /healthz` and starts `warbler-update.service`. Warbler adds nothing to Meridian beyond three config snippets |
 | Scope | Everything in v1: lessons, weekly coach, call simulator |
 | Audio retention | Keep all audio for every session (disk is plentiful: 256 GB) |
 | Deleting | Deleted sessions sit in "Recently deleted" for 14 days, then are removed for good ("Empty now" available) |
@@ -111,6 +114,9 @@ If a design document and this file disagree, stop and ask Autumn which is right,
  │   data/scenarios/  (pre-recorded call audio)          │
  └───────────────────────────────────────────────────────┘
 
+ HOST WATCHER (systemd, on the potato, outside Docker)
+   warbler-update.path ─► update.sh ─► GHCR (only when asked) ─► pull, recreate, health check, rollback
+
  MAC ONLY (never deployed)
    tools/callsim  ─► speech service ─► call audio ─► copied to the potato at deploy
 ```
@@ -131,7 +137,7 @@ warbler/
 ├── NOTES.md                 # findings, phone-test results, validation results
 ├── Makefile                 # dev, build, build-arm64, deploy, test, test-validate, test-real
 ├── docs/                    # design documents (see above)
-├── .github/workflows/       # GitHub Actions: make test on every push
+├── .github/workflows/       # tests on every push; publish multi-arch image to GHCR from main
 ├── web/                     # SvelteKit app
 │   ├── src/lib/dsp/         # pure TS DSP (unit-tested, no DOM)
 │   ├── src/lib/coach/       # rules.ts, constants.ts, report wording (pure, unit-tested)
@@ -150,7 +156,8 @@ warbler/
 ├── tools/validate/          # Python (uv): synthetic voices + parselmouth comparison
 ├── tools/callsim/           # Python (uv), Mac only: draft, voice, preview, bundle call audio
 ├── local-recordings/        # Autumn's own recordings. In .gitignore. Never committed
-└── deploy/                  # Dockerfile, compose file, tailscale serve notes
+├── Dockerfile
+└── deploy/                  # docker-compose.yml, install.sh, watcher/ (update.sh, systemd units, tests), meridian/ (config snippets), tailscale serve notes
 ```
 
 ## Safety rules (non-negotiable)
@@ -224,8 +231,8 @@ The full design (tables, file formats, every endpoint, upload safety, security, 
 - **Tables:** `sessions` (with `kind` of `practice`, `lesson`, `weekly_passage`, `free`, `call_sim`; fingerprints for files; `settings_snapshot`; `summary`; `analysis_version`; `deleted_at`), `session_tags`, `lesson_completions` (a log, since lessons can be repeated), `weekly_reports` (recomputations add rows and link old ones), `settings` (one row with a version number), `schema_migrations`.
 - **Files:** `data/audio/{id}.wav` (WAV mono 16-bit, 16 kHz, one constant), `data/series/{id}.wbs.gz` (compact per-frame record, versioned format), `data/scenarios/` (call audio).
 - **Upload:** the phone saves a pending copy first, uploads, and deletes the copy only after the server confirms matching fingerprints. The server writes files first, then the database record, and sweeps strays at start-up.
-- **Endpoints** (see `docs/data-api.md` for the full list): health, settings, sessions (create, list, get, edit tags, delete, restore), session audio (with Range) and series, analysis replacement for re-analysis, progress, lessons, weekly reports, scenarios, export, import.
-- **Server rules:** require the Tailscale identity header; allow only the app's own Host names; no CORS; strict content policy (own files only); body size limit about 100 MB; validate WAV headers; never trust client paths; publish the container port on `127.0.0.1` only; minimal logs with no personal data.
+- **Endpoints** (see `docs/data-api.md` for the full list): `/healthz` (unlocked, version only), health, version and update (see `docs/update.md`), settings, sessions (create, list, get, edit tags, delete, restore), session audio (with Range) and series, analysis replacement for re-analysis, progress, lessons, weekly reports, scenarios, export, import.
+- **Server rules:** require the Tailscale identity header (except `/healthz`, and `/api/busy` which answers loopback only); allow only the app's own Host names; no CORS; strict content policy (own files only); body size limit about 100 MB; validate WAV headers; never trust client paths; publish the container port on `127.0.0.1` only; minimal logs with no personal data.
 
 ## Lessons, coach and call simulator
 
@@ -257,20 +264,21 @@ Full design in `docs/call-simulator.md`. Pre-recorded phone calls with lifelike 
 
 Each phase ends with **Done when** criteria. Items marked **[HUMAN]** need Autumn; the agent must stop and ask, not guess. At the end of each phase, update `NOTES.md`, commit, and push.
 
-### Phase 0: Hello mic (gate)
+### Phase 0: Hello mic and update path (gate)
 
-Detailed task list and the phone test checklist are in `docs/phase-0.md`.
+Detailed task list and the phone test checklist are in `docs/phase-0.md`; the update design is in `docs/update.md`.
 
-- Scaffold repo, Makefile, SvelteKit (static/SPA), Go server embedding the build, `.gitignore` (including `local-recordings/`, `data/`), `AGENTS.md`, `NOTES.md`.
-- Dockerfile and compose file matching Autumn's other services on the potato. **[HUMAN]** points the agent at an existing compose project and picks a free port.
-- `tailscale serve` to the container on the potato and to the Vite dev server for phone testing. Check `tailscale serve --help` on the installed version; flags have changed across releases.
+- Scaffold repo, Makefile, SvelteKit (static/SPA, pnpm), Go server embedding the build, `.gitignore` (including `local-recordings/`, `data/`), `AGENTS.md`, `NOTES.md`.
+- Dockerfile and compose file matching Polaris (multi-stage, minimal final image, non-root, health check, loopback port 8892, `restart: unless-stopped`, update-signal mount).
+- GitHub Actions: tests on every push; build and publish a multi-arch image (`linux/amd64`, `linux/arm64`) to `ghcr.io/autumnsgrove/warbler` from `main`, with the `r<count>.<sha>` version stamped in.
+- **In-app update mechanism** per `docs/update.md`: `/healthz`, `/api/version`, check/start/status endpoints, `/api/busy`, a Settings "About" section; `deploy/watcher/` (script, path/service/timer units, tests); `deploy/install.sh`; `deploy/meridian/` snippets.
+- `tailscale serve` to the container on the potato and to the Vite dev server for phone testing. Check `tailscale serve --help` on the installed version.
 - Confirm the Tailscale identity header actually arrives, and add the server check.
-- GitHub Actions workflow running `make test`.
-- Minimal page: tap to start, live RMS meter, shows the real sample rate.
+- Minimal page: tap to start, live RMS meter, shows the real sample rate and the version.
 - PWA manifest and icons so it installs to the home screen. Bundle Lexend and Lucide.
 - A check that the built app makes no requests to outside addresses.
 
-**Done when:** [HUMAN] completes the eight-step phone checklist in `docs/phase-0.md` (including whether mic permission re-prompts, behaviour on lock and app switch, and whether stored data survives a few days of non-use). The app runs from the Docker container on the potato. Results are in `NOTES.md`.
+**Done when:** [HUMAN] completes the phone checklist in `docs/phase-0.md` (mic permission behaviour, lock and app-switch behaviour, stored-data survival over a few days). The app runs from the Docker container on the potato, pulled from GHCR. An update from Settings works end to end, an update from Meridian works end to end, and a deliberately broken build rolls back. Results are in `NOTES.md`.
 
 ### Phase 1: Live pitch
 
@@ -370,7 +378,9 @@ Things not yet decided or verified. Each is resolved at the phase shown.
 
 | Item | Phase | Notes |
 |---|---|---|
-| Where Autumn's other Docker projects live and which port is free | 0 | **[HUMAN]** |
+| Confirm port 8892 and folder `~/Warbler` are free on the potato (SSH from the Mac currently fails host-key verification, so the agent could not check) | 0 | **[HUMAN]** |
+| Make the GHCR package public (or log the potato in to GHCR) after the first publish | 0 | **[HUMAN]** |
+| Apply the three Meridian additions (or ask for a pull request) | 0 | **[HUMAN]** |
 | Does the Tailscale identity header arrive with the installed version? | 0 | Needed for the server lock |
 | Does mic permission re-prompt in the installed iPhone app? | 0 | The gate |
 | Does iOS keep an installed app's stored data across days of non-use? | 0 and 5 | Decides how much to trust the retry buffer |
@@ -378,7 +388,6 @@ Things not yet decided or verified. Each is resolved at the phase shown.
 | Do OpenRouter's ElevenLabs voices work as Autumn described (model name, how audio returns, price)? | 6b | Her report; not verified by the agent |
 | Speech service terms for generated audio | 6b | Read before spending |
 | Backup destination | 8 | **[HUMAN]** |
-| Review of lesson batch 6 and a decision on keeping the two articulation lessons given thin evidence | before Phase 0 | **[HUMAN]** |
 | Full reads or textbook checks for sources read only at abstract or summary level | before any lesson is marked `reviewed` | Listed in `docs/lessons.md` |
 | Scenario list for the call simulator | 6b | Autumn chooses which to write first |
 | Licence check before reusing any code from Braat, audirs or Voice Trainer | 1 or 4 | Only if reusing code |
@@ -391,7 +400,7 @@ Copy this section into `AGENTS.md`.
 2. Stop and ask at every **[HUMAN]** item. Do not fake phone-test results.
 3. Keep scope tight. Do not add features, dependencies, or services that are not in this plan without asking.
 4. Prefer small, readable functions and a functional core with thin imperative edges. DSP and measures stay pure and tested.
-5. No telemetry, no external network calls at runtime, no third-party scripts, fonts or icons loaded from outside.
+5. No telemetry, no external network calls from the app at runtime, no third-party scripts, fonts or icons loaded from outside. The only allowed outside traffic on the potato is the update watcher fetching a Warbler image on request.
 6. Do not invent clinical content. Lessons cite sources and ship as `draft`.
 7. Safety rules are requirements. If a task conflicts with them, flag it instead of working around it.
 8. When something is uncertain (iOS behaviour, LPC accuracy, library license), write findings in `NOTES.md` and surface them.
