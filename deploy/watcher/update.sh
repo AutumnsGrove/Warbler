@@ -64,8 +64,14 @@ atomic_write() { # <path> <content>
 	mv "$1.tmp" "$1"
 }
 
+# Escape text for use inside a JSON string. Backslash and double quote are
+# escaped, and every control character (tab, carriage return, newline and the
+# rest) becomes a space. A single raw control character makes the whole file
+# invalid JSON, and then the app would show nothing at all for a failed
+# update. The rollback test on the real potato found exactly that, from a tab
+# in Docker's log output.
 json_escape() {
-	printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr -d '\n'
+	printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr '[:cntrl:]' ' '
 }
 
 truncate_detail() {

@@ -213,6 +213,7 @@ Because Meridian's tap starts `warbler-update.service` with no signal file, the 
 | Watcher not installed | Heartbeat goes stale, Settings says "Updates are not set up" |
 | Files owned by root in the project folder | Watcher runs as the deploy user |
 | Half-written signal files | Write to temp name, then rename |
+| A failed update looking like nothing happened | The watcher turns every control character in its message into a space, so the result file is always valid JSON. If a result file is ever unreadable anyway, the app reports a failure with instructions instead of nothing. If no answer arrives for 90 seconds after the request disappears, Settings says so. (All three came from the real rollback test, which found a tab character in Docker's log output making the file invalid.) |
 
 ## Testing
 

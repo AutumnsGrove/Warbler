@@ -87,23 +87,39 @@ func (s *Store) Pending() (check, update bool) {
 	return s.exists(fileCheck), s.exists(fileRequested)
 }
 
-// Available returns the last check result, or nil if there has not been one.
+// Available returns the last check result, or nil if there has not been one or
+// it cannot be read (the app then simply asks again).
 func (s *Store) Available() (*Available, error) {
 	var a Available
-	ok, err := s.readJSON(fileAvailable, &a)
-	if err != nil || !ok {
+	state, err := s.readJSON(fileAvailable, &a)
+	if err != nil || state != fileValid {
 		return nil, err
 	}
 	return &a, nil
 }
 
 // Result returns the last update outcome, or nil if there has not been one.
-// A half-written or invalid file counts as no result.
+//
+// A result file that exists but cannot be read counts as a failed update with
+// an explanation, never as "no result". The watcher writes it atomically, so
+// unreadable content means something went wrong, and the one thing the app must
+// not do then is look as if nothing happened. (The real rollback test once hid
+// a failed update this way, when a tab character in Docker's log output made the
+// file invalid.)
 func (s *Store) Result() (*Result, error) {
 	var r Result
-	ok, err := s.readJSON(fileResult, &r)
-	if err != nil || !ok {
+	state, err := s.readJSON(fileResult, &r)
+	switch {
+	case err != nil:
 		return nil, err
+	case state == fileMissing:
+		return nil, nil
+	case state == fileInvalid:
+		return &Result{
+			Status:     "failed",
+			Detail:     "The update finished, but its result could not be read. Check the potato: journalctl -u warbler-update.service",
+			FinishedAt: s.Now().UTC().Format(time.RFC3339),
+		}, nil
 	}
 	return &r, nil
 }
@@ -130,21 +146,28 @@ func (s *Store) exists(name string) bool {
 	return err == nil
 }
 
-// readJSON decodes name into v. A missing file or invalid JSON returns
-// ok=false with no error: the watcher writes atomically, so invalid content
-// is treated as "not there yet" rather than a failure.
-func (s *Store) readJSON(name string, v any) (ok bool, err error) {
+type fileState int
+
+const (
+	fileMissing fileState = iota
+	fileValid
+	fileInvalid
+)
+
+// readJSON decodes name into v and says whether the file was missing, valid or
+// present but not valid JSON.
+func (s *Store) readJSON(name string, v any) (fileState, error) {
 	data, err := os.ReadFile(filepath.Join(s.Dir, name))
 	if errors.Is(err, os.ErrNotExist) {
-		return false, nil
+		return fileMissing, nil
 	}
 	if err != nil {
-		return false, fmt.Errorf("reading %s: %w", name, err)
+		return fileMissing, fmt.Errorf("reading %s: %w", name, err)
 	}
 	if json.Unmarshal(data, v) != nil {
-		return false, nil
+		return fileInvalid, nil
 	}
-	return true, nil
+	return fileValid, nil
 }
 
 // writeAtomic writes content under a temporary name and renames it into

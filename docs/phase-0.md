@@ -47,9 +47,9 @@ I reached the potato over SSH (`potato-remote`) and did the parts that did not n
 | 6 | Identity header arrives | agent, from the Mac over Tailscale | Done: it arrives and carries your login |
 | 7 | Lock turned on | agent | Done: through Tailscale allowed, direct without the header refused, wrong login refused, `/healthz` open |
 | 8 | Phone test | **you** | Waiting |
-| 9 | Update from Settings | agent drives the same endpoints your phone would; **you** confirm on the phone | In progress |
+| 9 | Update from Settings | agent drove the same endpoints your phone uses; **you** confirm on the phone | Server side done and working (22 seconds). Waiting for you to see it on the phone |
 | 10 | Update from Meridian | **you** apply the allowlist change, after the pull request is merged (or apply the snippets by hand) | Waiting |
-| 11 | Rollback test | agent publishes the broken build; **you** tap Update | Waiting |
+| 11 | Rollback test | agent publishes the broken build and runs it; **you** can watch it on the phone | Run once: rolled back correctly, and the test found a bug in how failures are reported, now fixed. Re-running |
 
 The steps below are kept in full, because they are also the recovery and re-install instructions.
 

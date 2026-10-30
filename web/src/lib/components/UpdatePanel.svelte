@@ -28,6 +28,7 @@
 	let loadError = $state('');
 	let actionError = $state('');
 	let slow = $state(false);
+	let now = $state(Date.now());
 
 	let timer: ReturnType<typeof setInterval> | null = null;
 	let pollUntil = 0;
@@ -42,7 +43,8 @@
 			startedAt,
 			startedFromVersion,
 			runningVersion: runningVer,
-			serverUnreachable
+			serverUnreachable,
+			now
 		})
 	);
 
@@ -65,6 +67,7 @@
 	}
 
 	async function tick(): Promise<void> {
+		now = Date.now();
 		if (startedAt !== null) {
 			// The page is served by the container being replaced, so /healthz
 			// may vanish for a while. That is expected during an update.

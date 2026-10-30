@@ -15,6 +15,7 @@ function inputs(over: Partial<UpdateInputs> = {}): UpdateInputs {
 		startedFromVersion: null,
 		runningVersion: 'r1.aaa',
 		serverUnreachable: false,
+		now: T0 + 5_000,
 		...over
 	};
 }
@@ -122,6 +123,28 @@ describe('deriveView', () => {
 			inputs({ result: { status: 'failed', detail: 'old', target: 't', finished_at: '2026-10-29T08:00:00Z' } })
 		);
 		expect(v.kind).toBe('up_to_date');
+	});
+});
+
+describe('no answer', () => {
+	const started = { startedAt: T0, startedFromVersion: 'r1.aaa' };
+
+	it('keeps saying updating for a while after the request disappears', () => {
+		expect(deriveView(inputs({ ...started, now: T0 + 30_000 })).kind).toBe('updating');
+	});
+
+	it('says there was no answer rather than spinning forever', () => {
+		const v = deriveView(inputs({ ...started, now: T0 + 120_000 }));
+		expect(v).toMatchObject({ kind: 'failed', rollbackFailed: false });
+		expect((v as { detail: string }).detail).toContain('without saying why');
+	});
+
+	it('does not give up while the server is still restarting', () => {
+		expect(deriveView(inputs({ ...started, serverUnreachable: true, now: T0 + 600_000 })).kind).toBe('updating');
+	});
+
+	it('does not give up while the watcher is still working', () => {
+		expect(deriveView(inputs({ ...started, updatePending: true, now: T0 + 600_000 })).kind).toBe('updating');
 	});
 });
 

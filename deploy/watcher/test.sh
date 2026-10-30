@@ -88,7 +88,7 @@ case "$*" in
 "inspect --format {{.State.Health.Status}} cid123")
 	if [ -f "$SB/state/upcount" ] && [ -n "$FAKE_HEALTH_AFTER_UP" ] && [ "$(cat "$SB/state/upcount")" -eq 1 ]; then echo "$FAKE_HEALTH_AFTER_UP"; else echo "$FAKE_HEALTH"; fi ;;
 "compose pull warbler")
-	echo "pulling $(pin)" ; [ "$FAKE_PULL_FAIL" = "1" ] && { echo "pull access denied"; exit 1; }; exit 0 ;;
+	echo "pulling $(pin)" ; [ "$FAKE_PULL_FAIL" = "1" ] && { printf '%s\n' "${FAKE_PULL_MESSAGE:-pull access denied}"; exit 1; }; exit 0 ;;
 "compose up -d --force-recreate --no-deps warbler")
 	n=$(( $(cat "$SB/state/upcount" 2>/dev/null || echo 0) + 1 )); echo $n >"$SB/state/upcount"
 	echo "up with image: $(pin)" >>"$SB/calls.log"
@@ -203,6 +203,21 @@ FAKE_PULL_FAIL=1; export FAKE_PULL_FAIL
 run_watcher
 check "result is failed" test "$(result_status)" = "failed"
 check "no pin left pointing at the broken target" test -z "$(env_pin)"
+teardown
+
+echo "failure text with tabs, quotes, backslashes and line breaks still gives valid JSON"
+setup
+FAKE_PULL_FAIL=1; export FAKE_PULL_FAIL
+# The quotes, backslash and control characters are the whole point of this test.
+# shellcheck disable=SC2089,SC2090
+FAKE_PULL_MESSAGE=$'pull failed:\t"quoted" back\\slash\r\nsecond line\x01end'
+# shellcheck disable=SC2090
+export FAKE_PULL_MESSAGE
+run_watcher
+check "result is failed" test "$(result_status)" = "failed"
+check "result file is valid JSON" python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$INST/update-signal/result"
+check "the reason survives" contains "$INST/update-signal/result" "second line"
+unset FAKE_PULL_MESSAGE
 teardown
 
 echo "recreate fails, rollback works"

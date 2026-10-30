@@ -44,6 +44,8 @@ export interface UpdateInputs {
 	runningVersion: string | null;
 	/** The server could not be reached during an update (it is restarting). */
 	serverUnreachable: boolean;
+	/** The current time (ms since epoch). Passed in so this stays a pure function. */
+	now: number;
 }
 
 export type UpdateView =
@@ -58,6 +60,13 @@ export type UpdateView =
 
 /** Slack for clock differences between the phone and the potato. */
 const CLOCK_SLACK_MS = 60_000;
+
+/**
+ * How long after the watcher has finished (the request is gone) the screen waits
+ * for any sign of an outcome before it says there is none. The watcher answers in
+ * seconds, so this only triggers if something is badly wrong.
+ */
+export const NO_ANSWER_MS = 90_000;
 
 export function deriveView(i: UpdateInputs): UpdateView {
 	if (!i.info) return { kind: 'loading' };
@@ -86,6 +95,20 @@ export function deriveView(i: UpdateInputs): UpdateView {
 	}
 
 	if (started && (i.updatePending || i.serverUnreachable || !finishedSomething(i))) {
+		// Not pending, server reachable, no result and no new version, for a long
+		// time: say so rather than spinning forever.
+		if (
+			!i.updatePending &&
+			!i.serverUnreachable &&
+			i.now - (i.startedAt ?? i.now) > NO_ANSWER_MS
+		) {
+			return {
+				kind: 'failed',
+				detail:
+					'The update ended without saying why, and the version has not changed. Check the potato: journalctl -u warbler-update.service',
+				rollbackFailed: false
+			};
+		}
 		return { kind: 'updating' };
 	}
 

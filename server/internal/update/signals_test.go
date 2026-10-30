@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -79,12 +80,32 @@ func TestAvailableAndResultReadWhatTheWatcherWrote(t *testing.T) {
 	}
 }
 
-func TestInvalidJSONCountsAsNoResult(t *testing.T) {
+func TestUnreadableResultIsAVisibleFailure(t *testing.T) {
 	s, dir := newStore(t)
-	_ = os.WriteFile(filepath.Join(dir, "result"), []byte(`{"status":`), 0o644)
+	// A raw tab inside a string is invalid JSON: this is what the real
+	// watcher once wrote, and the app showed nothing at all.
+	_ = os.WriteFile(filepath.Join(dir, "result"), []byte("{\"status\":\"failed\",\"detail\":\"a\tb\"}"), 0o644)
 	r, err := s.Result()
-	if err != nil || r != nil {
+	if err != nil || r == nil {
+		t.Fatalf("result = %+v, err %v; want a failure the user can see", r, err)
+	}
+	if r.Status != "failed" || !strings.Contains(r.Detail, "could not be read") {
+		t.Fatalf("result = %+v", r)
+	}
+}
+
+func TestMissingResultIsNil(t *testing.T) {
+	s, _ := newStore(t)
+	if r, err := s.Result(); r != nil || err != nil {
 		t.Fatalf("result = %+v, err %v; want nil, nil", r, err)
+	}
+}
+
+func TestUnreadableAvailableIsIgnored(t *testing.T) {
+	s, dir := newStore(t)
+	_ = os.WriteFile(filepath.Join(dir, "available.json"), []byte(`{"current":`), 0o644)
+	if a, err := s.Available(); a != nil || err != nil {
+		t.Fatalf("available = %+v, err %v; want nil, nil", a, err)
 	}
 }
 
