@@ -129,6 +129,8 @@ All ids are UUIDs made by the phone, so retries are safe.
   "f0_search_range": [70, 500],
   "explored_range": null,               // {"lo_hz": .., "hi_hz": ..} saved by lesson pitch-01
   "base_note_hz": null,                 // set by pitch-01, editable
+  "anchor_phrases": [],                 // up to 10 short phrases, set by xfer-01
+  "situation_ranking": [],              // situation ids, easiest first, set by xfer-02
   "formant_ceiling_hz": 5500,
   "show_note_names": true,
   "streaks": false,

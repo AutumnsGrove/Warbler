@@ -121,7 +121,7 @@ You asked for more variety, so this is 30 lessons, above the plan's original 14 
 | 27 | xfer-02 | Easy situations first | List situations from easiest to hardest and choose the first to try | Phase 2 |
 | 28 | xfer-03 | Quick resets | Short check-ins during the day, and being kind to yourself when the voice drifts | Phase 2 |
 | 29 | xfer-04 | Listening back | Replay a session, notice what you like, and pick one thing to work on | Phase 2 |
-| 30 | xfer-05 | Phone calls and ordering | Practise common short exchanges: ordering food, booking, phoning a shop | Phase 2 |
+| 30 | xfer-05 | Phone calls and ordering | Practise common short exchanges: ordering food, booking, phoning a shop. Uses the call simulator | Phase 6b |
 
 ## 4. Lesson file template
 
@@ -185,6 +185,10 @@ Found while drafting. Each is small, and each is now part of the plan's Phase 1 
 | **Stage labels** | pitch-04 | A large label such as "Stage 2 of 3: chant" |
 | **Hidden target** | pitch-04 stage 3 | The target line is hidden while you speak, then the result is shown |
 | **Instant replay** | res-01 to res-03 | A replay button that plays back the last few seconds of your voice, so you can hear your own resonance (you hear yourself differently while speaking). Needs a short rolling audio buffer, and fits with Phase 2's audio handling |
+| **Typed phrase input** | xfer-01 | Choose from a list or type up to 10 anchor phrases, saved in Settings (`anchor_phrases`) |
+| **Drag-to-rank cards** | xfer-02 | Order 15 situation cards from easiest to hardest; saved in Settings (`situation_ranking`) |
+| **Quick reset button** | xfer-03 | A guided 60-second routine on the Today screen |
+| **Extremes markers** | xfer-04 | Marks the highest and lowest pitch moments in a stretch of a session for quick replay |
 | **Pause counter** | pros-03, art-01 | Counts pauses of about a quarter second or longer between spoken stretches, with their lengths and the total reading time. Uses the voiced/silent detection already in the pitch code |
 | **Onset rise time** | qual-01 | How quickly the volume rises from silence at the start of a sound; shown as a small picture. A smooth rise means an easy start |
 | **Sustained-sound timer** | qual-02 | Times how long a steady sound lasts on one breath. No target |
@@ -195,6 +199,7 @@ Found while drafting. Each is small, and each is now part of the plan's Phase 1 
 ## 5. Sources used (all checked in this planning pass)
 
 Tier A:
+- Oates et al. (2023), JSLHR, gender-affirming voice training (abstract-level only; the publisher blocked full-text access): https://pubs.asha.org/doi/10.1044/2023_JSLHR-23-00258
 - Ladd (1984), Declination: a review and some hypotheses (abstract read; full paper not): https://www.cambridge.org/core/journals/phonology/article/abs/declination-a-review-and-some-hypotheses/DF00BEC50AD41E8387DB19EA50D7715F
 - Systematic review, speech therapy for transgender women: https://pmc.ncbi.nlm.nih.gov/articles/PMC10553375
 - Systematic review and meta-analysis: https://pmc.ncbi.nlm.nih.gov/articles/PMC10363306
@@ -236,7 +241,7 @@ Tier C (ideas only, and standard-fact references not yet checked against a textb
 | 3 | pitch-06, res-01 to res-04 | Drafted, awaiting review |
 | 4 | res-05, qual-01 to qual-03, pros-01 | Drafted, awaiting review |
 | 5 | pros-02 to pros-04, art-01, art-02 | Drafted, awaiting review |
-| 6 | xfer-01 to xfer-05 | Not started |
+| 6 | xfer-01 to xfer-05 | Drafted, awaiting review |
 
 ## 8. Working process
 
