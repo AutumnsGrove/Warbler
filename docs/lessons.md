@@ -185,6 +185,7 @@ Found while drafting. Each is small, and each is now part of the plan's Phase 1 
 | **Stage labels** | pitch-04 | A large label such as "Stage 2 of 3: chant" |
 | **Hidden target** | pitch-04 stage 3 | The target line is hidden while you speak, then the result is shown |
 | **Instant replay** | res-01 to res-03 | A replay button that plays back the last few seconds of your voice, so you can hear your own resonance (you hear yourself differently while speaking). Needs a short rolling audio buffer, and fits with Phase 2's audio handling |
+| **Pause counter** | pros-03, art-01 | Counts pauses of about a quarter second or longer between spoken stretches, with their lengths and the total reading time. Uses the voiced/silent detection already in the pitch code |
 | **Onset rise time** | qual-01 | How quickly the volume rises from silence at the start of a sound; shown as a small picture. A smooth rise means an easy start |
 | **Sustained-sound timer** | qual-02 | Times how long a steady sound lasts on one breath. No target |
 | **Pitch range used** | pros-01 | The spread of the pitch line (in semitones) for one attempt |
@@ -203,6 +204,8 @@ Tier A:
 - Immediate effects of SOVT as warm-up in singers: https://pubmed.ncbi.nlm.nih.gov/34256979/
 
 Tier B:
+- Bradford District Care NHS, dysarthria resource pack (read; general pace, pause and breath advice only, since the pack is for people with speech difficulties): https://www.bdct.nhs.uk/wp-content/uploads/2024/12/Practical-resource-pack-for-someone-with-dysarthria.pdf
+- Not read: Aneurin Bevan University Health Board voice-care leaflet (the PDF could not be decoded).
 - Dorset County Hospital, Easy Onsets leaflet (read in full): https://dchft.nhs.uk/leaflets/easy-onsets/
 - Dorset County Hospital, Breathing for Speech Exercises (read in full): https://dchft.nhs.uk/leaflets/breathing-for-speech-exercises/
 - Cambridge University Hospitals, Voice volume exercise sheet (read in full): https://www.cuh.nhs.uk/patient-information/voice-volume-exercise-sheet/
@@ -232,7 +235,7 @@ Tier C (ideas only, and standard-fact references not yet checked against a textb
 | 2 | pitch-01 to pitch-05 | Drafted, awaiting review |
 | 3 | pitch-06, res-01 to res-04 | Drafted, awaiting review |
 | 4 | res-05, qual-01 to qual-03, pros-01 | Drafted, awaiting review |
-| 5 | pros-02 to pros-04, art-01, art-02 | Not started |
+| 5 | pros-02 to pros-04, art-01, art-02 | Drafted, awaiting review |
 | 6 | xfer-01 to xfer-05 | Not started |
 
 ## 8. Working process
