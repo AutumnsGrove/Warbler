@@ -18,9 +18,9 @@ The first gate. It proves the risky parts work before anything bigger is built o
 | Web app: tap-to-start, live volume meter, Settings with About and updates, Diagnostics | `web/` | type check, unit tests, build |
 | App icons (a small yellow bird), manifest, Lexend font and Lucide icons bundled | `web/static/`, `tools/icons/` | the build check below |
 | Check that the built app mentions no outside web addresses | `scripts/` | its own tests |
-| Docker image (3.5 MB, read-only, non-root) and compose file | `Dockerfile`, `docker-compose.yml` | built and run locally |
+| Docker image (3.5 MB, read-only, non-root) and compose file | `Dockerfile`, `docker-compose.yml` | built and run locally, then published and run from GHCR |
 | Host update watcher, systemd units, installer, Meridian snippets | `deploy/` | 59 checks with a fake Docker |
-| GitHub Actions: tests on every push, publish image from `main` | `.github/workflows/ci.yml` | runs when pushed |
+| GitHub Actions: tests on every push, publish image from `main` | `.github/workflows/ci.yml` | green on GitHub; first image published (`r26.4e14c5f`) |
 
 ## Words used here
 
@@ -55,14 +55,11 @@ git clone https://github.com/AutumnsGrove/Warbler.git ~/Warbler
 
 If a folder called `~/Warbler` already exists, tell me before doing anything.
 
-### Step 3. Wait for the first image, then make it public (GitHub, 5 minutes)
+### Step 3. Check the image is available (nothing to do)
 
-When I push this phase, GitHub builds the image and publishes it. Watch it at `https://github.com/AutumnsGrove/Warbler/actions`. When the **publish** job is green:
+GitHub has already built the first image and published it for both phone-class and laptop-class chips (`linux/arm64` for the potato, `linux/amd64`). It is public: I checked that an anonymous request, which is what the potato's update watcher makes, gets an answer. You can see it at `https://github.com/users/AutumnsGrove/packages/container/package/warbler`.
 
-1. Go to your GitHub profile, then **Packages**, then **warbler**.
-2. **Package settings**, scroll to **Danger Zone**, **Change visibility**, choose **Public**.
-
-If you skip this, the potato will be refused when it tries to pull the image. (The image holds only the program and the built web app: no recordings, no settings, no lessons.)
+(The image holds only the program and the built web app: no recordings, no settings, no lessons.)
 
 ### Step 4. Install on the potato (potato, 5 minutes)
 

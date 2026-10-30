@@ -10,6 +10,8 @@ Findings, test results and open questions, in the order they are learned. Each e
 - `lucide-svelte` is deprecated by its author in favour of `@lucide/svelte` (same icon set, same repository). The project uses `@lucide/svelte`.
 - The SvelteKit scaffold in use (SvelteKit 3, Vite 8) keeps the adapter in `vite.config.ts` rather than `svelte.config.js`, and uses `#lib` subpath imports which cannot resolve TypeScript files without extensions. The project uses plain relative imports.
 - `cookie` is declared as a dev dependency of `web/` because SvelteKit's post-build step imports it, and with pnpm's strict layout a copy higher up the folder tree (found at `~/node_modules/cookie`, an old CommonJS version) was being picked up instead.
+- The GHCR package became public on its own (it inherits the public repository's visibility), so no manual step was needed.
+- GitHub Actions warns that `actions/checkout@v4` and friends run on Node 20 (deprecated). They still work. Bump to newer majors when convenient.
 - No licence file has been chosen for the repository. Left for Autumn to decide.
 
 ### Phone test results ([HUMAN], see docs/phase-0.md, section F)
@@ -34,7 +36,7 @@ Findings, test results and open questions, in the order they are learned. Each e
 
 | Check | Result |
 |---|---|
-| First image published to GHCR, package made public | |
+| First image published to GHCR (`r26.4e14c5f`, amd64 and arm64), anonymous lookup works | Done. Verified by the agent, 2026-10-30 |
 | Update from Settings works end to end | |
 | Update from Meridian works end to end | |
 | Deliberately broken build rolled back | |

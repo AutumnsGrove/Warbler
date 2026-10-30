@@ -381,7 +381,6 @@ Things not yet decided or verified. Each is resolved at the phase shown.
 | Item | Phase | Notes |
 |---|---|---|
 | Confirm port 8892 and folder `~/Warbler` are free on the potato (SSH from the Mac currently fails host-key verification, so the agent could not check) | 0 | **[HUMAN]** |
-| Make the GHCR package public (or log the potato in to GHCR) after the first publish | 0 | **[HUMAN]** |
 | Apply the three Meridian additions (or ask for a pull request) | 0 | **[HUMAN]** |
 | Does the Tailscale identity header arrive with the installed version? | 0 | Needed for the server lock |
 | Does mic permission re-prompt in the installed iPhone app? | 0 | The gate |

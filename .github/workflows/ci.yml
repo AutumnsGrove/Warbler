@@ -22,6 +22,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+          cache: false # there is no go.sum yet (no outside Go dependencies)
       - run: test -z "$(gofmt -l server web)" || (gofmt -l server web; exit 1)
       - run: go vet ./...
       - run: go test -race ./...
