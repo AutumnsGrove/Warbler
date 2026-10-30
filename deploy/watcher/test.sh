@@ -269,6 +269,24 @@ check "result is ok" test "$(result_status)" = "ok"
 check "asked about busy more than once" test "$(grep -c '/api/busy' "$SB/calls.log")" -ge 3
 teardown
 
+echo "following another tag (the rollback-test channel)"
+setup
+echo "WARBLER_UPDATE_TAG=broken-test" >"$INST/.env"
+run_watcher
+check "asks GHCR for that tag" contains "$SB/calls.log" "/manifests/broken-test"
+check "never asked for latest" not_contains "$SB/calls.log" "/manifests/latest"
+check "still updates by digest" test "$(env_pin)" = "$REPO@$D2"
+teardown
+
+echo "a malformed tag in .env is refused"
+setup
+echo "WARBLER_UPDATE_TAG=../../evil tag" >"$INST/.env"
+run_watcher
+check "result is failed" test "$(result_status)" = "failed"
+check "says the tag is invalid" contains "$INST/update-signal/result" "not a valid tag"
+check "no lookup, no pull" not_contains "$SB/calls.log" "manifests"
+teardown
+
 echo "timer tick with nothing waiting"
 setup
 run_watcher --tick

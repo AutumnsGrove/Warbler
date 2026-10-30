@@ -158,6 +158,20 @@ Rules (taken from Polaris's script, plus the additions marked new):
 - Health check: Docker's own check (the binary runs `warbler healthcheck`, a tiny request to `/healthz`, since the final image has no shell or `wget`). Polls up to 120 seconds.
 - The timer backstops a missed file notification. It acts only if a signal file exists, and always refreshes the heartbeat. It never updates by itself.
 
+## Following another tag
+
+By default the watcher follows the `latest` tag. The operator can set `WARBLER_UPDATE_TAG` in the potato's `.env` to follow a different tag from the same repository. The rollback test uses it with `broken-test`. Only the `.env` file on the host decides this; the app cannot change it, and the tag must match `[A-Za-z0-9._-]` and be at most 64 characters. The repository itself is never configurable.
+
+## What does not update itself
+
+The app image updates. These come from the **git checkout** on the potato (for example `~/Warbler`) and do not change on their own: `docker-compose.yml`, `deploy/watcher/update.sh` and the systemd units. When a change touches them, run on the potato:
+
+```bash
+cd ~/Warbler && git pull && deploy/install.sh   # install.sh never overwrites .env
+```
+
+Polaris's watcher does a `git pull` as part of every update. Warbler's does not yet, to keep the first version small and predictable. If you would like that, say so and it becomes a follow-up (with the same care Polaris took about merge conflicts).
+
 ## The image and its publishing
 
 - `ghcr.io/autumnsgrove/warbler`, built for `linux/amd64` and `linux/arm64` (the potato is arm64) by GitHub Actions on every push to `main` that passes tests. Tags: `latest` and the short commit id. A `vX.Y.Z` git tag adds a version tag.

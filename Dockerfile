@@ -33,13 +33,26 @@ COPY --from=web-build /web/build ./web/build
 ARG VERSION=dev-docker
 ARG TARGETOS
 ARG TARGETARCH
+# BREAK is only for the rollback test (docs/phase-0.md, step 11). When set, the
+# image contains a stand-in program that crashes at start-up instead of
+# Warbler, so the update watcher can be seen putting the previous version
+# back. The real server code contains nothing test-specific. The published
+# `broken-test` tag is the only place this is ever used.
+ARG BREAK=""
 # CGO_ENABLED=0: the server has no C dependencies, so the binary is fully
 # static and cross-compiles with just GOOS and GOARCH.
 RUN --mount=type=cache,target=/root/.cache/go-build,id=warbler-go-${TARGETOS}-${TARGETARCH} \
-    CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
-    go build -trimpath \
-      -ldflags="-s -w -X github.com/AutumnsGrove/Warbler/server/internal/version.Version=${VERSION}" \
-      -o /out/warbler ./server/cmd/warbler
+    if [ -n "${BREAK}" ]; then \
+      mkdir -p /broken && \
+      printf 'package main\nfunc main() { panic("deliberately broken build for the rollback test") }\n' > /broken/main.go && \
+      cd /broken && \
+      CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o /out/warbler main.go ; \
+    else \
+      CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+      go build -trimpath \
+        -ldflags="-s -w -X github.com/AutumnsGrove/Warbler/server/internal/version.Version=${VERSION}" \
+        -o /out/warbler ./server/cmd/warbler ; \
+    fi
 
 # --- runtime -----------------------------------------------------------
 # Distroless: the program, CA certificates and nothing else. No shell, no

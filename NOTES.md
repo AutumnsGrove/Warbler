@@ -6,13 +6,14 @@ Findings, test results and open questions, in the order they are learned. Each e
 
 ### Setup facts
 
-- Port 8892 and folder `~/Warbler` proposed for the potato. **Not yet confirmed free** (SSH from the Mac failed host-key verification when the agent tried, so it could not check). Meridian's docs list 8891, 8899, 8418, 8890, 8888, 8081 as in use.
+- Port 8892 and folder `~/Warbler`: confirmed free on the potato on 2026-10-30. Ports already listening there: 22 53 80 443 5335 8080 8081 8418 8766 8888 8890 8891 8899 11434.
 - `lucide-svelte` is deprecated by its author in favour of `@lucide/svelte` (same icon set, same repository). The project uses `@lucide/svelte`.
 - The SvelteKit scaffold in use (SvelteKit 3, Vite 8) keeps the adapter in `vite.config.ts` rather than `svelte.config.js`, and uses `#lib` subpath imports which cannot resolve TypeScript files without extensions. The project uses plain relative imports.
 - `cookie` is declared as a dev dependency of `web/` because SvelteKit's post-build step imports it, and with pnpm's strict layout a copy higher up the folder tree (found at `~/node_modules/cookie`, an old CommonJS version) was being picked up instead.
 - The GHCR package became public on its own (it inherits the public repository's visibility), so no manual step was needed.
 - GitHub Actions warns that `actions/checkout@v4` and friends run on Node 20 (deprecated). They still work. Bump to newer majors when convenient.
-- No licence file has been chosen for the repository. Left for Autumn to decide.
+- Licence: MIT, chosen by Autumn on 2026-10-30 (`LICENSE`).
+- SSH to the potato: the working aliases are `potato-remote` (over Tailscale) and `potato` (home network only). The agent's first attempt used the wrong name (`lepotato`), which is why it saw a host-key error. The potato has passwordless sudo, Docker 29.6 with Compose v5.3, systemd 257, flock, Tailscale 1.104.
 
 ### Phone test results ([HUMAN], see docs/phase-0.md, section F)
 

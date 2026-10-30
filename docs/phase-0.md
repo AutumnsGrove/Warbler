@@ -151,9 +151,29 @@ Then open Meridian. Warbler should show a green dot and its version. After I pus
 
 If you would rather I make these as a pull request to the Meridian repository, say so.
 
-### Step 11. The rollback test (needs both of us, 10 minutes)
+### Step 11. The rollback test (10 minutes)
 
-I will push a version that deliberately fails to start. You tap Update. **Expected:** Warbler says the update did not work and the previous version is running again, with the reason. I then push a fix. This proves the safety net before we rely on it.
+This proves the safety net before we rely on it. The idea: publish a build that deliberately crashes on start-up, point Warbler at it for a moment, tap Update, and watch it put the working version back.
+
+It uses its own tag, `broken-test`, so the normal `latest` channel is never touched, and nothing follows the broken build unless you ask it to.
+
+1. **Publish the broken build.** I run `gh workflow run CI -f broken=true`. (Or you: GitHub, Actions tab, CI, Run workflow, tick "broken".) A minute or two later the image `ghcr.io/autumnsgrove/warbler:broken-test` exists. It is a stand-in program that crashes the moment it starts.
+2. **Point the potato's updater at it.** On the potato:
+   ```bash
+   cd ~/Warbler
+   echo 'WARBLER_UPDATE_TAG=broken-test' >> .env
+   ```
+   This setting lives only in the potato's own `.env`. The app cannot change it.
+3. **Tap Update** in Warbler's Settings (check for updates first, if it does not offer one).
+4. **What you should see:** "Updating..." for up to about two minutes, then **"The update did not work, and the previous version is running again."** with a reason in small print (something like "the new version started but never reported healthy"). Warbler is still working, on its old version.
+5. **Put it back.** On the potato:
+   ```bash
+   cd ~/Warbler
+   sed -i '/^WARBLER_UPDATE_TAG=/d' .env
+   ```
+   Warbler is now following `latest` again.
+
+If instead Warbler is left broken, that is the failure we are testing for. Tell me, and I will fix the watcher. (Your other services are unaffected either way: the watcher only ever touches the `warbler` service.)
 
 ---
 

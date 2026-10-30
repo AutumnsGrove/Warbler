@@ -24,7 +24,10 @@ set -euo pipefail
 REPO="ghcr.io/autumnsgrove/warbler"
 REPO_PATH="${REPO#ghcr.io/}"
 SERVICE="warbler"
-TAG="latest"
+# The tag to follow. Normally "latest". The operator can set WARBLER_UPDATE_TAG
+# in .env to follow another tag from the same repository (the rollback test
+# uses "broken-test"). Only the host's .env decides this; the app cannot.
+DEFAULT_TAG="latest"
 
 # This script lives at <install dir>/deploy/watcher/update.sh.
 INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -87,6 +90,8 @@ env_get() { # <NAME> <default>
 	v="$(grep "^$1=" "$ENV_FILE" 2>/dev/null | head -1 | cut -d= -f2- || true)"
 	printf '%s' "${v:-$2}"
 }
+
+TAG="$(env_get WARBLER_UPDATE_TAG "$DEFAULT_TAG")"
 
 set_pinned_image() {
 	local value="$1"
@@ -226,6 +231,11 @@ fi
 
 if [ "$HAS_CHECK" = "yes" ] && [ "$HAS_REQUESTED" = "no" ]; then
 	: >"$CMD_LOG"
+	if ! [[ "$TAG" =~ ^[A-Za-z0-9._-]{1,64}$ ]]; then
+		echo "WARBLER_UPDATE_TAG in .env is not a valid tag name: $TAG" >&2
+		rm -f "$CHECK_FILE"
+		exit 0
+	fi
 	if latest="$(resolve_latest_digest)"; then
 		write_available "$(current_digest)" "$latest"
 	else
@@ -257,9 +267,13 @@ if [ "$HAS_REQUESTED" = "yes" ]; then
 	fi
 fi
 
+if ! [[ "$TAG" =~ ^[A-Za-z0-9._-]{1,64}$ ]]; then
+	finish_failed "WARBLER_UPDATE_TAG in .env is not a valid tag name: $TAG"
+fi
+
 : >"$CMD_LOG"
 if ! digest="$(resolve_latest_digest)"; then
-	finish_failed "could not look up the newest version on GHCR: $(truncate_detail "$(cat "$CMD_LOG")")"
+	finish_failed "could not look up the newest version (tag $TAG) on GHCR: $(truncate_detail "$(cat "$CMD_LOG")")"
 fi
 TARGET_IMAGE="$REPO@$digest"
 if ! valid_target "$TARGET_IMAGE"; then

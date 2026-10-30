@@ -87,6 +87,7 @@ If a design document and this file disagree, stop and ask Autumn which is right,
 | Weekly passage | "The morning market" (Option A in `docs/passages.md`). Frozen once the first real recording is made |
 | Accuracy | Pitch within 3%, formants within 8%, median difference against Praat under 5%; low-confidence readings are hidden, not shown. Thresholds are starting points |
 | Recording session | One 20-minute session of Autumn's own voice, done once before Phase 1 validation and reused in Phase 4. Stays in `local-recordings/`, never committed |
+| Licence | MIT, same as Polaris and Meridian (`LICENSE`) |
 | Language | Explain terms in plain language in every doc and in the app. Autumn is new to the technical vocabulary |
 
 ## Architecture
