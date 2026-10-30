@@ -49,7 +49,7 @@ I reached the potato over SSH (`potato-remote`) and did the parts that did not n
 | 8 | Phone test | **you** | Waiting |
 | 9 | Update from Settings | agent drove the same endpoints your phone uses; **you** confirm on the phone | Server side done and working (22 seconds). Waiting for you to see it on the phone |
 | 10 | Update from Meridian | **you** apply the allowlist change, after the pull request is merged (or apply the snippets by hand) | Waiting |
-| 11 | Rollback test | agent publishes the broken build and runs it; **you** can watch it on the phone | Run once: rolled back correctly, and the test found a bug in how failures are reported, now fixed. Re-running |
+| 11 | Rollback test | agent publishes the broken build and runs it; **you** can watch it on the phone | Done, twice. The first run rolled back correctly but found a bug in how failures are reported; fixed, and the second run showed a readable `failed` in 24 seconds. Warbler never went down |
 
 The steps below are kept in full, because they are also the recovery and re-install instructions.
 

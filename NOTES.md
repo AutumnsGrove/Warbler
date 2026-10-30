@@ -41,5 +41,13 @@ Findings, test results and open questions, in the order they are learned. Each e
 |---|---|
 | First image published to GHCR (`r26.4e14c5f`, amd64 and arm64), anonymous lookup works | Done. Verified by the agent, 2026-10-30 |
 | Update from Settings works end to end | Done 2026-10-30, driven through the app's own endpoints over Tailscale: `r28.6071538` to `r29.9fbf7e3` in 22 seconds, result ok. Other services untouched |
-| Update from Meridian works end to end | |
-| Deliberately broken build rolled back | First run 2026-10-30: rolled back correctly in about 23 seconds, Warbler stayed up on `r29.9fbf7e3`. **Found a bug**: the failure message contained a tab from Docker's log output, which made the result file invalid JSON, so the app showed "no result" instead of "failed". Fixed three ways (watcher escaping, app treats unreadable result as a failure, UI gives up waiting after 90s) with regression tests. Re-run after the fix: see below |
+| Update from Meridian works end to end | Waiting. Pull request AutumnsGrove/Meridian#8 (not merged) adds the example config and docs; the root-owned `/etc/meridian/targets.json` and `observe.json` on the potato still need the entry, applied by Autumn |
+| Deliberately broken build rolled back | First run 2026-10-30: rolled back correctly in about 23 seconds, Warbler stayed up on `r29.9fbf7e3`. **Found a bug**: the failure message contained a tab from Docker's log output, which made the result file invalid JSON, so the app showed "no result" instead of "failed". Fixed three ways (watcher escaping, app treats unreadable result as a failure, UI gives up waiting after 90s) with regression tests. Re-run after the fix, same day: rolled back in 24 seconds and the app's status endpoint showed `failed` with the readable reason; the test channel was then removed and Warbler updated normally to `r30.2db0556` |
+
+### Meridian pull request
+
+- AutumnsGrove/Meridian#8, opened 2026-10-30, **not merged** (Autumn wants to see the automated reviewer). `scripts/check all` green locally, including fuzzing, gitleaks and govulncheck. The reviewer workflow ran in full (Pi through OpenRouter, 2m35s, every step succeeded) and posted no comment, meaning it found nothing to flag. Its gate skips only PRs where every changed file is under `docs/`, `mockups/` or is a `.md`; this PR also changes `examples/*.yaml` and `.json`, so it was reviewed.
+
+### Things to know
+
+- The potato's checkout (`~/Warbler`) only changes when someone runs `git pull` there. Updates replace the image, not the compose file, the watcher script or the units. See "What does not update itself" in `docs/update.md`.
