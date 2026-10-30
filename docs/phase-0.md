@@ -8,6 +8,8 @@ Goal: the smallest possible app that proves the risky parts work, before we buil
 2. The app can be reached privately from the phone through Tailscale, over a secure (`https`) address.
 3. The potato can run it in Docker, the same way as the other projects.
 4. We learn whether iOS asks for mic permission again every time the app is opened.
+5. The Tailscale identity header reaches the server (our second lock, see `docs/data-api.md`).
+6. We learn whether iOS keeps an installed app's stored data across a few days of non-use (decides how far to trust the unsent-session safety net in Phase 5).
 
 Question 4 is the big unknown. If iOS asks every time, the daily experience is different from what we imagined, and we need to know now.
 
@@ -55,6 +57,13 @@ Question 4 is the big unknown. If iOS asks every time, the daily experience is d
 - Dev setup is a second `tailscale serve` pointing at the Vite dev server on the Mac, on a different port, so both can run at once.
 - **[HUMAN]** Run the commands the agent gives you on the potato and Mac.
 
+### E2. Server lock and tests (agent)
+
+- Server reads the Tailscale identity header from `tailscale serve` and refuses API requests without it (health check excepted for local use). Log what arrives while testing, to confirm the header name on the installed version.
+- Server checks the `Host` name.
+- GitHub Actions workflow runs `make test` on every push.
+- A check that the built app makes no requests to outside addresses.
+
 ### F. The real test (human)
 
 Do these in order on the iPhone and write down what happens. The agent will put your answers in `NOTES.md`.
@@ -67,6 +76,7 @@ Do these in order on the iPhone and write down what happens. The agent will put 
 6. Lock the phone for 30 seconds with the meter running, then unlock. What state is the app in?
 7. Switch to another app and back while the meter runs. What happens?
 8. Read the sample rate shown on screen and note it.
+9. A few days later, open the installed app again. Does it still remember that it was installed and (if the app saved a test note) does the note still exist? The app stores a tiny test note in the phone's own storage in this phase for exactly this check.
 
 ## Done when
 

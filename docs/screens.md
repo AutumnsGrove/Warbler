@@ -514,6 +514,20 @@ Each "(?)" opens a one-or-two sentence plain explanation.
 
 ---
 
+## Additions since the first sketches
+
+These came out of the later planning and are not drawn above.
+
+- **Today:** a "Quick reset" button (guided 60-second routine, appears after lesson xfer-03) and a "Try a practice call" card (after Phase 6b).
+- **Practice and lessons:** a small fixed banner on practice steps, "Stop if anything hurts or strains". The graph can show a target line with a soft band, a staircase of targets, and a play button that sounds the target note. Some lessons show a volume curve, a pause counter, or an instant replay button.
+- **After a session:** feel-tag chips, then a short calm line if Tight or Scratchy was chosen.
+- **History:** a "Recently deleted" list (14 days), a small phone icon on practice calls, filters by tag.
+- **Settings:** week start day (default Sunday), lessons per week (default 4), ramp (default suggestion 25%), anchor phrases, situation ranking, saved range and base note, update older sessions, Recently deleted purge.
+- **Weekly report:** compare against week 1, last week, or any chosen week. "How this was chosen" expands.
+- **Lessons:** a subtle "draft" marker, and a small note on lessons marked "thin evidence".
+- **Not saved yet:** the full-screen state described in section 6.
+- **Hidden Self-test screen** (Phase 1): plays a generated tone through the analysis path and shows expected versus measured pitch.
+
 ## Note names, briefly
 
 Musical notes are letters A to G, plus a number saying which octave (higher number = higher pitch). Middle C on a piano is C4, around 262 Hz. Each time the pitch doubles you move up one octave, so A3 is 220 Hz and A4 is 440 Hz.
