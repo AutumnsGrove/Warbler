@@ -49,5 +49,6 @@ The web app uses pnpm (`web/`). The server is Go with no outside dependencies. P
 - `/healthz` returns only `status` and `version`. Do not add anything to it.
 - Lesson text does not repeat stop-and-rest reminders; the app shows one fixed banner. See `docs/lessons.md`.
 - The weekly passage text is frozen once the first real recording exists. See `docs/passages.md`.
+- A stray `~/node_modules` in Autumn's home folder can make local web checks pass when CI fails (it supplied Node types and an old `cookie`). Run `make test-web-clean` before pushing web changes.
 - Use relative imports in `web/src` (the `$lib` and `#lib` aliases are not set up).
 - `web/build/.gitkeep` must stay committed so the Go embed compiles before the web build has run.

@@ -6,7 +6,7 @@ IMAGE   ?= ghcr.io/autumnsgrove/warbler
 DEV_PORT ?= 8892
 
 .DEFAULT_GOAL := help
-.PHONY: help dev web build build-arm64 test test-go test-web test-scripts test-watcher lint icons docker docker-run deploy clean
+.PHONY: help dev web build build-arm64 test test-go test-web test-web-clean test-scripts test-watcher lint icons docker docker-run deploy clean
 
 help: ## List the commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-14s %s\n", $$1, $$2}'
@@ -35,6 +35,11 @@ test-go: ## Go tests, with the race detector
 test-web: ## Web type check, unit tests, build, and the no-outside-addresses check
 	cd web && pnpm check && pnpm test && pnpm build
 	node scripts/check-no-external.mjs web/build
+
+test-web-clean: ## Same as test-web, but in a copy outside your home folder, as CI sees it (a stray ~/node_modules can hide problems)
+	rm -rf /tmp/warbler-clean-web && mkdir -p /tmp/warbler-clean-web
+	rsync -a --exclude node_modules --exclude .svelte-kit --exclude 'build/*' web/ /tmp/warbler-clean-web/
+	cd /tmp/warbler-clean-web && pnpm install --frozen-lockfile && pnpm check && pnpm test && pnpm build
 
 test-scripts: ## Tests for the repo's helper scripts
 	node --test scripts/check-no-external.test.mjs
