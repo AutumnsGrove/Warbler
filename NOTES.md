@@ -12,6 +12,7 @@ Findings, test results and open questions, in the order they are learned. Each e
 - `cookie` is declared as a dev dependency of `web/` because SvelteKit's post-build step imports it, and with pnpm's strict layout a copy higher up the folder tree (found at `~/node_modules/cookie`, an old CommonJS version) was being picked up instead.
 - The GHCR package became public on its own (it inherits the public repository's visibility), so no manual step was needed.
 - GitHub Actions warns that `actions/checkout@v4` and friends run on Node 20 (deprecated). They still work. Bump to newer majors when convenient.
+- Existing unit `her-go.service` on the potato has `StartLimitIntervalSec` under `[Service]` (it belongs under `[Unit]`), so systemd ignores it and says so whenever units are verified. Not Warbler's, harmless, left alone; worth fixing separately.
 - Licence: MIT, chosen by Autumn on 2026-10-30 (`LICENSE`).
 - SSH to the potato: the working aliases are `potato-remote` (over Tailscale) and `potato` (home network only). The agent's first attempt used the wrong name (`lepotato`), which is why it saw a host-key error. The potato has passwordless sudo, Docker 29.6 with Compose v5.3, systemd 257, flock, Tailscale 1.104.
 
@@ -31,7 +32,8 @@ Findings, test results and open questions, in the order they are learned. Each e
 
 ### Identity header
 
-- Does `Tailscale-User-Login` arrive through `tailscale serve`? (Diagnostics, "Server lock")
+- **Yes.** `Tailscale-User-Login` arrives through `tailscale serve` (Tailscale 1.104.2 on the potato) and carries the login name. Verified 2026-10-30 from the Mac with `curl https://lepotato.taild95077.ts.net:8892/api/whoami` while the lock was in `log` mode. The lock is now `enforce`, restricted to that login.
+- Lock behaviour verified on the potato: through serve allowed; direct to `127.0.0.1:8892` with no header 403; wrong login 403; `/healthz` 200.
 
 ### Update path
 

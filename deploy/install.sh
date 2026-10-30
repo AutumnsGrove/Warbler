@@ -71,7 +71,8 @@ for unit in warbler-update.path warbler-update.service warbler-tick.service warb
 	sed -e "s|@INSTALL_DIR@|$INSTALL_DIR|g" -e "s|@USER@|$USER_NAME|g" \
 		"$INSTALL_DIR/deploy/watcher/$unit" >"$tmp/$unit"
 	if command -v systemd-analyze >/dev/null; then
-		systemd-analyze verify "$tmp/$unit" 2>&1 | grep -v "^$" || true
+		# Only report problems with this unit, not with other units on the machine.
+		systemd-analyze verify "$tmp/$unit" 2>&1 | grep -F "$unit" || true
 	fi
 	run sudo install -m 644 "$tmp/$unit" "/etc/systemd/system/$unit"
 done

@@ -33,6 +33,28 @@ The first gate. It proves the risky parts work before anything bigger is built o
 
 ---
 
+## Status (updated 2026-10-30)
+
+I reached the potato over SSH (`potato-remote`) and did the parts that did not need your phone. What is done and what is left:
+
+| Step | What | Who | State |
+|---|---|---|---|
+| 1 | Port 8892 free | agent | Done: free |
+| 2 | Code on the potato at `~/Warbler` | agent | Done |
+| 3 | Image published and public | agent | Done (anonymous lookup works) |
+| 4 | Installed (folders, `.env`, update watcher units, container) | agent | Done. Running, version shown by `/healthz` |
+| 5 | `tailscale serve` on port 8892 | agent | Done. Added alongside your three existing entries, which are untouched |
+| 6 | Identity header arrives | agent, from the Mac over Tailscale | Done: it arrives and carries your login |
+| 7 | Lock turned on | agent | Done: through Tailscale allowed, direct without the header refused, wrong login refused, `/healthz` open |
+| 8 | Phone test | **you** | Waiting |
+| 9 | Update from Settings | agent drives the same endpoints your phone would; **you** confirm on the phone | In progress |
+| 10 | Update from Meridian | **you** apply the allowlist change, after the pull request is merged (or apply the snippets by hand) | Waiting |
+| 11 | Rollback test | agent publishes the broken build; **you** tap Update | Waiting |
+
+The steps below are kept in full, because they are also the recovery and re-install instructions.
+
+---
+
 ## Your steps
 
 Each step says what to do, what you should see, and what to tell me if it differs. Total time: about an hour, plus a few days for the last check.
