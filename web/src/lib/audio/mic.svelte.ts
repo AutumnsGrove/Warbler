@@ -84,7 +84,8 @@ class MicSession {
 			track.onended = () => this.interrupted('The microphone stopped');
 
 			this.sampleRate = this.ctx.sampleRate;
-			this.baseLatency = this.ctx.baseLatency ?? null;
+			// Some browsers report 0 here, which means "not measured", not "instant".
+			this.baseLatency = this.ctx.baseLatency ? this.ctx.baseLatency : null;
 			eventLog.add(`Audio running at ${this.ctx.sampleRate} Hz`);
 
 			await this.ctx.audioWorklet.addModule('/level-worklet.js');
@@ -123,6 +124,7 @@ class MicSession {
 		this.stream = null;
 		await this.wakeLock?.release().catch(() => {});
 		this.wakeLock = null;
+		if (this.ctx) this.ctx.onstatechange = null;
 		await this.ctx?.close().catch(() => {});
 		this.ctx = null;
 		this.level = 0;
@@ -154,7 +156,9 @@ class MicSession {
 	}
 
 	private onContextState(): void {
-		const s = this.ctx?.state as string | undefined;
+		// Closing the context fires one last state event after we have let go of it.
+		if (!this.ctx) return;
+		const s = this.ctx.state as string;
 		eventLog.add(`Audio state: ${s}`);
 		// iOS reports "interrupted" for phone calls and similar.
 		if (s === 'suspended' || s === 'interrupted') this.interrupted('Audio was interrupted');
