@@ -9,6 +9,13 @@ name: CI
 on:
   push:
     branches: [main]
+    # Notes and documentation alone do not need a test run or a new image (every
+    # published image bumps the version shown in Settings).
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".gitignore"
   pull_request:
   # Manual: run it from the Actions tab (or `gh workflow run CI -f broken=true`)
   # to publish the deliberately broken rollback-test image. See docs/phase-0.md.

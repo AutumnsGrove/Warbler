@@ -27,7 +27,7 @@ Findings, test results and open questions, in the order they are learned. Each e
 | 5 | Asked again after fully closing and reopening? | |
 | 6 | After locking the phone 30 seconds | |
 | 7 | After switching to another app and back | |
-| 8 | Sample rate shown | |
+| 8 | Sample rate shown | Desktop browser (Mac): 48,000 Hz. iPhone: see iPhone result below |
 | 9 | Stored test note still there after a few days? | |
 
 ### Identity header
@@ -51,3 +51,15 @@ Findings, test results and open questions, in the order they are learned. Each e
 ### Things to know
 
 - The potato's checkout (`~/Warbler`) only changes when someone runs `git pull` there. Updates replace the image, not the compose file, the watcher script or the units. See "What does not update itself" in `docs/update.md`.
+
+### iPhone result, first report (2026-10-31)
+
+Reported by Autumn from the Diagnostics page on her iPhone (which of Safari or the installed app, and the answers to checklist items 3 to 7, still to be confirmed):
+
+- Echo cancellation: **off**. iOS honoured the request.
+- Noise suppression: **unknown**. Safari does not report this setting, so it is not known whether it is applied.
+- Auto gain: **unknown**. Same.
+- Audio base latency: **2.7 ms**.
+- Desktop browser (Mac, same day): all three reported **off**; 48,000 Hz.
+
+Open question for Phase 1: whether iOS applies automatic gain or noise suppression even though it does not report them. Proposed check (not built yet): a guided soft-then-loud test on Diagnostics that reports the level difference in dB. A large gap means nothing is levelling the voice.
