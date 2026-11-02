@@ -20,15 +20,15 @@ Findings, test results and open questions, in the order they are learned. Each e
 
 | # | Question | Result |
 |---|---|---|
-| 1 | Page loads in Safari | |
-| 2 | Mic prompt appears, meter moves | |
-| 3 | Add to Home Screen works | |
-| 4 | Mic permission asked again in installed app? | |
-| 5 | Asked again after fully closing and reopening? | |
-| 6 | After locking the phone 30 seconds | |
-| 7 | After switching to another app and back | |
+| 1 | Page loads in Safari | Yes (Autumn, iPhone, 2026-10-31) |
+| 2 | Mic prompt appears, meter moves | Yes |
+| 3 | Add to Home Screen works | Yes; tested as an installed app (PWA) |
+| 4 | Mic permission asked again in installed app? | **Yes, every time the app is opened** |
+| 5 | Asked again after fully closing and reopening? | Yes (same as 4) |
+| 6 | After locking the phone 30 seconds | **Audio stops entirely, and the app shows no change** (still says Listening). Bug to fix: the app does not notice the stop |
+| 7 | After switching to another app and back | Same as 6: audio stops, the screen does not say so |
 | 8 | Sample rate shown | Desktop browser (Mac): 48,000 Hz. iPhone: see iPhone result below |
-| 9 | Stored test note still there after a few days? | |
+| 9 | Stored test note still there after a few days? | **Yes**, still there on 2026-11-02 (first written 2026-10-31) |
 
 ### Identity header
 
@@ -63,3 +63,9 @@ Reported by Autumn from the Diagnostics page on her iPhone (which of Safari or t
 - Desktop browser (Mac, same day): all three reported **off**; 48,000 Hz.
 
 Open question for Phase 1: whether iOS applies automatic gain or noise suppression even though it does not report them. Proposed check (not built yet): a guided soft-then-loud test on Diagnostics that reports the level difference in dB. A large gap means nothing is levelling the voice.
+
+### What the phone results decide
+
+- **Microphone asks every launch:** still workable. Phase 1 adds a friendly "tap to allow" first screen (per `docs/phase-0.md`).
+- **Audio stops silently on lock or app switch, and the app does not notice:** this is a bug in `web/src/lib/audio/mic.svelte.ts`. It listens for the audio context's state and the app being hidden, but iOS evidently does neither in a way the code catches. Fix needed: also watch the microphone track's `mute` and `ended` events, treat the app becoming hidden as a pause, and check the track is still live when the app becomes visible again. Then show "Paused" with a Resume button (tapping is required on iOS to restart audio).
+- **Stored data survives at least two days** in the installed app. The unsent-session safety net in Phase 5 looks viable; re-check after a week or more.
