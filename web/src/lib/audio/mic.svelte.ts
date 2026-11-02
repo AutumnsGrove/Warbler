@@ -9,11 +9,16 @@
  *   off, because they distort pitch measurements later. The settings the
  *   browser actually granted are recorded, since iOS may ignore the request.
  * - Interruptions (a phone call, the app going to the background) pause the
- *   session and say so.
+ *   session and say so. iOS can stop the microphone on lock or app switch
+ *   without a clear signal, so three things guard against a silent stop:
+ *   the track's mute and ended events, the app being hidden (which always
+ *   needs a tap on Resume afterwards), and a once-a-half-second check that
+ *   level readings are still arriving (see health.ts).
  */
 
 import { eventLog } from '../eventlog.svelte';
 import { dbToMeter, holdPeak, isClipping, rmsFromSums, smoothLevel, toDbfs } from '../dsp/level';
+import { pauseReason } from './health';
 
 export type MicState = 'idle' | 'starting' | 'running' | 'paused' | 'denied' | 'error';
 
@@ -25,6 +30,14 @@ export interface GrantedSettings {
 	channelCount?: number;
 	sampleRate?: number;
 }
+
+/** Raw sound, with the phone's own clean-up switched off, because it would distort pitch. */
+const AUDIO_CONSTRAINTS: MediaTrackConstraints = {
+	echoCancellation: false,
+	noiseSuppression: false,
+	autoGainControl: false,
+	channelCount: 1
+};
 
 class MicSession {
 	state = $state<MicState>('idle');
@@ -42,7 +55,14 @@ class MicSession {
 	private ctx: AudioContext | null = null;
 	private stream: MediaStream | null = null;
 	private node: AudioWorkletNode | null = null;
+	private source: MediaStreamAudioSourceNode | null = null;
 	private wakeLock: WakeLockSentinel | null = null;
+	private watchdog: ReturnType<typeof setInterval> | null = null;
+	/** When the last level reading arrived (performance.now clock). */
+	private lastLevelAt = 0;
+	/** Set when the app was hidden: audio may be dead, so only a tap on Resume may continue. */
+	private needsTap = false;
+	private lastResumeAt = 0;
 
 	get active(): boolean {
 		return this.state === 'running' || this.state === 'paused' || this.state === 'starting';
@@ -58,30 +78,13 @@ class MicSession {
 			const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
 			this.ctx = new Ctx();
 			const resumed = this.ctx.resume();
-			const streamPromise = navigator.mediaDevices.getUserMedia({
-				audio: {
-					echoCancellation: false,
-					noiseSuppression: false,
-					autoGainControl: false,
-					channelCount: 1
-				}
-			});
+			const streamPromise = navigator.mediaDevices.getUserMedia({ audio: AUDIO_CONSTRAINTS });
 
 			this.stream = await streamPromise;
 			eventLog.add('Microphone permission granted');
 			await resumed;
 
-			const track = this.stream.getAudioTracks()[0];
-			const s = track.getSettings();
-			this.granted = {
-				echoCancellation: s.echoCancellation,
-				noiseSuppression: s.noiseSuppression,
-				autoGainControl: s.autoGainControl,
-				channelCount: s.channelCount,
-				sampleRate: s.sampleRate
-			};
-			eventLog.add(`Granted settings: ${JSON.stringify(this.granted)}`);
-			track.onended = () => this.interrupted('The microphone stopped');
+			this.bindTrack(this.stream);
 
 			this.sampleRate = this.ctx.sampleRate;
 			// Some browsers report 0 here, which means "not measured", not "instant".
@@ -100,15 +103,17 @@ class MicSession {
 			// The worklet is routed to the speakers through a gain of zero. Some
 			// browsers only run audio nodes that lead to the output, and zero
 			// gain means nothing is heard (so no feedback).
-			const source = this.ctx.createMediaStreamSource(this.stream);
 			const mute = this.ctx.createGain();
 			mute.gain.value = 0;
-			source.connect(this.node);
 			this.node.connect(mute);
 			mute.connect(this.ctx.destination);
+			this.connectSource();
 
 			this.ctx.onstatechange = () => this.onContextState();
 			document.addEventListener('visibilitychange', this.onVisibility);
+			this.lastLevelAt = performance.now();
+			this.needsTap = false;
+			this.watchdog = setInterval(() => this.check(), 500);
 			await this.requestWakeLock();
 			this.state = 'running';
 		} catch (err) {
@@ -117,7 +122,10 @@ class MicSession {
 	}
 
 	async stop(): Promise<void> {
-		document.removeEventListener('visibilitychange', this.onVisibility);
+		this.stopWatching();
+		this.needsTap = false;
+		this.source?.disconnect();
+		this.source = null;
 		this.node?.disconnect();
 		this.node = null;
 		this.stream?.getTracks().forEach((t) => t.stop());
@@ -135,19 +143,97 @@ class MicSession {
 		eventLog.add('Stopped');
 	}
 
-	/** Try to continue after an interruption. Must be called from a tap. */
+	/**
+	 * Try to continue after an interruption. Must be called from a tap.
+	 *
+	 * If the microphone track is dead, or the last Resume (under 5 seconds ago)
+	 * did not bring sound back, ask the phone for a fresh microphone stream.
+	 */
 	async resume(): Promise<void> {
+		if (this.state !== 'paused') return;
+		const repeat = performance.now() - this.lastResumeAt < 5000;
+		this.lastResumeAt = performance.now();
+		this.needsTap = false;
 		try {
 			await this.ctx?.resume();
+			const track = this.stream?.getAudioTracks()[0];
+			if (repeat || !track || track.readyState !== 'live' || track.muted) await this.reacquire();
+			this.lastLevelAt = performance.now();
 			await this.requestWakeLock();
-			this.state = this.ctx?.state === 'running' ? 'running' : this.state;
+			this.message = '';
+			this.state = 'running';
 			eventLog.add('Resumed');
 		} catch (err) {
 			this.fail(err);
 		}
 	}
 
+	/** Swap in a fresh microphone stream, keeping the same audio context and worklet. */
+	private async reacquire(): Promise<void> {
+		const next = await navigator.mediaDevices.getUserMedia({ audio: AUDIO_CONSTRAINTS });
+		this.stream?.getTracks().forEach((t) => t.stop());
+		this.stream = next;
+		this.bindTrack(next);
+		this.connectSource();
+		eventLog.add('Microphone reconnected');
+	}
+
+	/** Record what the phone granted and listen for the track stopping or being muted. */
+	private bindTrack(stream: MediaStream): void {
+		const track = stream.getAudioTracks()[0];
+		const s = track.getSettings();
+		this.granted = {
+			echoCancellation: s.echoCancellation,
+			noiseSuppression: s.noiseSuppression,
+			autoGainControl: s.autoGainControl,
+			channelCount: s.channelCount,
+			sampleRate: s.sampleRate
+		};
+		eventLog.add(`Granted settings: ${JSON.stringify(this.granted)}`);
+		track.onended = () => this.interrupted('The microphone stopped.');
+		// iOS mutes the track (it sends silence) when the screen locks or another app takes over.
+		track.onmute = () => this.interrupted('The phone muted the microphone.');
+		track.onunmute = () => eventLog.add('Microphone unmuted by the phone');
+	}
+
+	/** Route the current stream into the worklet, replacing any earlier source. */
+	private connectSource(): void {
+		if (!this.ctx || !this.stream || !this.node) return;
+		this.source?.disconnect();
+		this.source = this.ctx.createMediaStreamSource(this.stream);
+		this.source.connect(this.node);
+	}
+
+	/**
+	 * Compare what the phone says with what is actually arriving, and pause or
+	 * un-pause to match. Runs twice a second and on every relevant event.
+	 */
+	private check(): void {
+		if (!this.ctx) return;
+		const track = this.stream?.getAudioTracks()[0];
+		const reason = pauseReason({
+			hidden: document.visibilityState === 'hidden',
+			contextState: this.ctx.state as string,
+			trackState: track?.readyState ?? 'ended',
+			trackMuted: track?.muted ?? true,
+			msSinceLevel: performance.now() - this.lastLevelAt
+		});
+		if (reason) this.interrupted(reason);
+		else if (this.state === 'paused' && !this.needsTap) {
+			this.state = 'running';
+			this.message = '';
+			eventLog.add('Audio is flowing again');
+		}
+	}
+
+	private stopWatching(): void {
+		if (this.watchdog) clearInterval(this.watchdog);
+		this.watchdog = null;
+		document.removeEventListener('visibilitychange', this.onVisibility);
+	}
+
 	private onLevel(m: { sumSq: number; count: number; peak: number }): void {
+		this.lastLevelAt = performance.now();
 		const db = toDbfs(rmsFromSums(m.sumSq, m.count));
 		this.db = db;
 		this.level = smoothLevel(this.level, dbToMeter(db));
@@ -161,13 +247,17 @@ class MicSession {
 		const s = this.ctx.state as string;
 		eventLog.add(`Audio state: ${s}`);
 		// iOS reports "interrupted" for phone calls and similar.
-		if (s === 'suspended' || s === 'interrupted') this.interrupted('Audio was interrupted');
-		else if (s === 'running' && this.state === 'paused') this.state = 'running';
+		this.check();
 	}
 
 	private onVisibility = (): void => {
-		eventLog.add(document.visibilityState === 'hidden' ? 'App hidden' : 'App visible again');
-		if (document.visibilityState === 'visible' && this.state === 'running') void this.requestWakeLock();
+		const hidden = document.visibilityState === 'hidden';
+		eventLog.add(hidden ? 'App hidden' : 'App visible again');
+		// Audio often dies silently while hidden, so coming back always needs a tap on Resume.
+		if (hidden) {
+			this.needsTap = true;
+			this.check();
+		}
 	};
 
 	private interrupted(why: string): void {
@@ -208,6 +298,7 @@ class MicSession {
 	}
 
 	private async cleanupAfterFailure(): Promise<void> {
+		this.stopWatching();
 		this.stream?.getTracks().forEach((t) => t.stop());
 		this.stream = null;
 		await this.ctx?.close().catch(() => {});

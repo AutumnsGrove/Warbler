@@ -2,13 +2,13 @@
 
 Where things stand, so the next session can start without rereading the whole history. Autumn uses she/her pronouns and is new to the technical vocabulary: explain terms plainly. Read `AGENTS.md` first, then `PLAN.md`.
 
-Last updated 2026-11-02.
+Last updated 2026-11-02 (later).
 
 ## State
 
 **Planning is complete.** `PLAN.md` plus eight design docs in `docs/` and 30 drafted lessons in `web/content/lessons/` (all `status: draft`, all reviewed and approved by Autumn).
 
-**Phase 0 is built, live and almost finished.** Warbler runs in Docker on the potato at `https://lepotato.taild95077.ts.net:8892`, behind Tailscale with the identity lock enforced. Updating works end to end (Settings button, and the host watcher with rollback). CI is green and publishes a multi-arch image to `ghcr.io/autumnsgrove/warbler`. The repo is public and MIT licensed.
+**Phase 0 is built, live and almost finished** (waiting on the phone re-test of the audio fix and a Meridian update). Warbler runs in Docker on the potato at `https://lepotato.taild95077.ts.net:8892`, behind Tailscale with the identity lock enforced. Updating works end to end (Settings button, and the host watcher with rollback). CI is green and publishes a multi-arch image to `ghcr.io/autumnsgrove/warbler`. The repo is public and MIT licensed.
 
 ## Phone test results (iPhone, installed app) - `NOTES.md` has the table
 
@@ -19,10 +19,9 @@ Last updated 2026-11-02.
 
 ## Do next
 
-1. **Fix silent audio loss** in `web/src/lib/audio/mic.svelte.ts`: also watch the track's `mute` and `ended` events, treat the app being hidden as a pause, check the track is live when the app returns, then show "Paused" with a Resume button (iOS needs a tap). Run `make test-web-clean` before pushing.
-2. **Decide on the soft-then-loud test** (about 30 seconds on Diagnostics, reports the level gap in dB) to learn whether iOS secretly levels the voice. Autumn has not said yes or no. Recommended before Phase 1.
-3. **Meridian.** PR AutumnsGrove/Meridian#8 is open and **deliberately unmerged** (Autumn wants to see the reviewer; it ran in full and posted no comment). Applying `deploy/meridian/` snippets to the root-owned `/etc/meridian/{targets,observe}.json` on the potato is Autumn's step, then test an update from Meridian (runbook step 10).
-4. Close Phase 0: finish step 10, update `NOTES.md`, then start Phase 1 (live pitch). Read `docs/testing.md` first: the 20-minute recording session is due before pitch validation.
+1. **Phone re-test of the audio fix** (Autumn): open the app, tap start, lock the phone for 30 seconds, unlock; then switch to another app and back. Expect "Paused" with a Resume button, and Resume bringing the meter back. The Diagnostics event log shows what fired. Also remove and re-add the app to the Home Screen to see the dark icon. Record results in `NOTES.md` table rows 6 and 7.
+2. **Meridian step 10** (Autumn): config is applied. Once this change is published to GHCR (push to main, CI green), try an update from Meridian and record it.
+3. **Close Phase 0** when 1 and 2 pass, then start Phase 1 (live pitch). Read `docs/testing.md` first: the 20-minute recording session is due before pitch validation.
 
 ## Facts worth knowing
 
@@ -38,9 +37,13 @@ Last updated 2026-11-02.
 
 ## Open questions for Autumn
 
-- Soft-then-loud test: yes or no?
 - Does she want Meridian's reviewer shown a deliberately questionable change, to see it comment?
-- A real dark theme? The app is light only; her screenshots looked dark, probably a browser or extension forcing it.
+
+## Decided 2026-11-02
+
+- The app is **dark only**, no light theme. Palette lives in `web/src/lib/styles/app.css`; icons are redrawn by `make icons`.
+- The soft-then-loud test was done by hand: iOS does not level her voice. The guided dB test is dropped.
+- Meridian config is applied on the potato (Autumn). PR #8 stays unmerged by choice.
 
 ## Commands
 

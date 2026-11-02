@@ -25,8 +25,8 @@ Findings, test results and open questions, in the order they are learned. Each e
 | 3 | Add to Home Screen works | Yes; tested as an installed app (PWA) |
 | 4 | Mic permission asked again in installed app? | **Yes, every time the app is opened** |
 | 5 | Asked again after fully closing and reopening? | Yes (same as 4) |
-| 6 | After locking the phone 30 seconds | **Audio stops entirely, and the app shows no change** (still says Listening). Bug to fix: the app does not notice the stop |
-| 7 | After switching to another app and back | Same as 6: audio stops, the screen does not say so |
+| 6 | After locking the phone 30 seconds | **Audio stops entirely, and the app shows no change** (still says Listening). Fixed in code 2026-11-02, awaiting phone re-test |
+| 7 | After switching to another app and back | Same as 6: audio stops, the screen does not say so. Fixed in code 2026-11-02, awaiting phone re-test |
 | 8 | Sample rate shown | Desktop browser (Mac): 48,000 Hz. iPhone: see iPhone result below |
 | 9 | Stored test note still there after a few days? | **Yes**, still there on 2026-11-02 (first written 2026-10-31) |
 
@@ -62,10 +62,17 @@ Reported by Autumn from the Diagnostics page on her iPhone (which of Safari or t
 - Audio base latency: **2.7 ms**.
 - Desktop browser (Mac, same day): all three reported **off**; 48,000 Hz.
 
-Open question for Phase 1: whether iOS applies automatic gain or noise suppression even though it does not report them. Proposed check (not built yet): a guided soft-then-loud test on Diagnostics that reports the level difference in dB. A large gap means nothing is levelling the voice.
+Open question for Phase 1: whether iOS applies automatic gain or noise suppression even though it does not report them.
+
+**Answered 2026-11-02 (Autumn, by hand, iPhone):** she spoke softly and then loudly and the level did not get flattened; it stayed at a good level throughout. So iOS is not secretly levelling her voice. This was a by-ear check, not the guided dB test, which was therefore never built and is no longer needed. Re-check only if pitch or formant readings look oddly flat.
 
 ### What the phone results decide
 
 - **Microphone asks every launch:** still workable. Phase 1 adds a friendly "tap to allow" first screen (per `docs/phase-0.md`).
-- **Audio stops silently on lock or app switch, and the app does not notice:** this is a bug in `web/src/lib/audio/mic.svelte.ts`. It listens for the audio context's state and the app being hidden, but iOS evidently does neither in a way the code catches. Fix needed: also watch the microphone track's `mute` and `ended` events, treat the app becoming hidden as a pause, and check the track is still live when the app becomes visible again. Then show "Paused" with a Resume button (tapping is required on iOS to restart audio).
+- **Audio stops silently on lock or app switch, and the app does not notice:** fixed in code on 2026-11-02 (`web/src/lib/audio/mic.svelte.ts`, with the decision logic in `health.ts` and tests). The session now pauses when the track is muted or ended, when the app is hidden (coming back always needs a tap on Resume), and when no level readings have arrived for 1.5 seconds. Resume asks the phone for a fresh microphone stream if the old one is dead or a first Resume did not bring sound back. **Not yet confirmed on the phone**: iOS behaviour cannot be simulated, so Autumn needs to lock the phone and switch apps and see "Paused" and Resume work. The Diagnostics event log shows which signal fired.
 - **Stored data survives at least two days** in the installed app. The unsent-session safety net in Phase 5 looks viable; re-check after a week or more.
+
+### Decisions, 2026-11-02
+
+- **Dark theme only.** Autumn does not want a light mode at all. Palette is warm dark browns with cream text and the same warbler yellow; every text pair measured at 6.5:1 or better (AA needs 4.5:1), button edges 4.2:1 (non-text needs 3:1). The icons, favicon, manifest colours, status bar and `theme-color` were changed to match, so the installed app has no cream flash on launch. The installed app must be removed and added to the Home Screen again on the phone to pick up the new icon and status bar style.
+- **Meridian:** Autumn has applied the config snippets on the potato. An update from Meridian has not been tested because there is not yet a newer build to update to; it will be tested with the next published image (this change).
