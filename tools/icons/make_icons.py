@@ -16,7 +16,7 @@ import sys
 import zlib
 from pathlib import Path
 
-BG = (0xF4, 0xE9, 0xCF)  # warm cream
+BG = (0x21, 0x1B, 0x14)  # warm dark brown, matches the app's card colour
 BODY = (0xF0, 0xC0, 0x30)  # warbler yellow
 WING = (0xC9, 0x93, 0x1B)  # darker gold
 BEAK = (0xDB, 0x7A, 0x36)  # orange

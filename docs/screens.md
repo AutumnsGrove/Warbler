@@ -18,7 +18,7 @@ These come from the safety rules, so they apply everywhere.
 4. **Calm motion.** Respect the phone's "reduce motion" setting.
 5. **One main action per screen.**
 6. **No emojis anywhere.** All icons come from the Lucide icon set. Symbols like check marks and arrows in these sketches stand in for Lucide icons.
-7. **Warm, bird-themed look.** Soft cream and warm neutrals, a gentle accent colour taken from a warbler's plumage (a soft yellow, for example), rounded shapes. Bird touches stay subtle: the logo, the empty-state illustrations, the loading screen. Never cartoonish.
+7. **Warm, bird-themed look, dark only.** There is no light theme (Autumn's choice, 2026-11-02). Warm dark browns rather than pure black, cream text, a gentle accent colour taken from a warbler's plumage (a soft yellow, for example), rounded shapes. Bird touches stay subtle: the logo, the empty-state illustrations, the loading screen. Never cartoonish.
 8. **Font: Lexend**, bundled with the app (no downloads from Google at runtime, so nothing leaves your network). Lexend was designed to be easy to read, which suits a tool used while concentrating on speaking.
 
 ## Navigation

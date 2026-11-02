@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="22" fill="#F4E9CF"/>
+  <rect width="100" height="100" rx="22" fill="#211B14"/>
   <g transform="translate(15 9) scale(0.7)">
     <polygon points="30,58 12,46 10,66" fill="#C9931B"/>
     <ellipse cx="48" cy="58" rx="24" ry="18" transform="rotate(-8 48 58)" fill="#F0C030"/>

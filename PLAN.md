@@ -78,7 +78,7 @@ If a design document and this file disagree, stop and ask Autumn which is right,
 | Auth | No passwords. The container port is published to `127.0.0.1` on the potato only; `tailscale serve` is the sole way in. The server also requires the Tailscale identity header |
 | Approved dependencies | Beyond the stack above: `@fontsource/lexend` (bundled font) and `@lucide/svelte` icons (the maintained successor of `lucide-svelte`, same icon set). Build-only: `cookie`, pinned because SvelteKit's build step needs it under pnpm. Anything else needs asking |
 | Services | GitHub (repo, public) and GitHub Actions (tests on every push; no secrets, no recordings). The call-simulator speech service is Mac-only. Any other new service needs asking |
-| Look and feel | Warm, subtle bird theme. Font: Lexend (bundled). Icons: Lucide. **No emojis anywhere** (UI, docs, lessons, commit messages) |
+| Look and feel | Warm, subtle bird theme, **dark only** (no light theme, decided 2026-11-02). Font: Lexend (bundled). Icons: Lucide. **No emojis anywhere** (UI, docs, lessons, commit messages) |
 | Pitch display | Hz plus nearest note name, always shown together |
 | Targets | User-configurable. The app ships **no default target** and assumes no direction. Default ramp suggestion is 25% |
 | Session feel tags | After each session, optional tap-to-select chips (voice feel and daily context). Fixed list in v1, no free text |

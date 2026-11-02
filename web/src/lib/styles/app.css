@@ -3,28 +3,34 @@
 @import '@fontsource/lexend/latin-600.css';
 
 /*
- * Warbler's look: warm paper, a warbler-yellow accent, soft rounded shapes.
+ * Warbler's look: a warm, dark night with a warbler-yellow accent and soft
+ * rounded shapes. There is no light theme, by Autumn's choice. The colours
+ * are warm browns rather than pure black, which is gentler on the eyes and
+ * avoids the glare of white text on black.
  * Rules that matter more than taste (docs/screens.md):
  *  - no red anywhere: nothing here is ever a "failure" colour
  *  - tap targets at least 44px
  *  - motion is switched off when the phone asks for reduced motion
  */
 :root {
-	--cream: #fbf6ec;
-	--paper: #fffdf8;
-	--sand: #f1e8d3;
-	--line: #e6dac1;
-	--ink: #2b2118;
-	--muted: #6a5b49;
-	--gold: #e9b72b;
-	--gold-soft: #f7e3a0;
-	--olive: #5a6930;
-	--clay: #9a5b2c;
+	/* Surfaces, darkest to lightest: page, card, raised or highlighted. */
+	--cream: #16120d;
+	--paper: #211b14;
+	--sand: #2d251b;
+	--line: #3f3527;
+	--edge: #8c7b62;
+	--ink: #f4ecdc;
+	--muted: #b8a98f;
+	--gold: #f0c030;
+	--gold-soft: #5a4a17;
+	--on-gold: #2b2118;
+	--olive: #c3d078;
+	--clay: #d9894a;
 	--radius: 18px;
 	--radius-small: 12px;
 	--tap: 48px;
 	--font: 'Lexend', system-ui, -apple-system, sans-serif;
-	color-scheme: light;
+	color-scheme: dark;
 }
 
 *,
@@ -77,7 +83,7 @@ button,
 	min-height: var(--tap);
 	padding: 0.65rem 1.25rem;
 	border-radius: var(--radius-small);
-	border: 1.5px solid var(--ink);
+	border: 1.5px solid var(--edge);
 	background: var(--paper);
 	color: var(--ink);
 	font-weight: 500;
@@ -92,7 +98,8 @@ button,
 button.primary,
 .button.primary {
 	background: var(--gold);
-	border-color: var(--ink);
+	border-color: var(--gold);
+	color: var(--on-gold);
 }
 
 button:disabled {
