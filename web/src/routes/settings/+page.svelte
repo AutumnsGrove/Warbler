@@ -227,6 +227,10 @@
 	<h2>Tools</h2>
 	<p class="muted">Used while Warbler is being set up.</p>
 	<a class="button" href="/diagnostics">Diagnostics</a>
+	<a class="button" href="/self-test">Self-test</a>
+	<p class="hint">
+		The Self-test plays known tones and shows what the analysis measured, to check this device.
+	</p>
 </section>
 
 <p class="muted small">Your settings are saved on this device only.</p>

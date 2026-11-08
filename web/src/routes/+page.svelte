@@ -3,6 +3,7 @@
 	import Square from '@lucide/svelte/icons/square';
 	import Meter from '../lib/components/Meter.svelte';
 	import PitchTrace from '../lib/components/PitchTrace.svelte';
+	import ReferenceTone from '../lib/components/ReferenceTone.svelte';
 	import { mic, TRACE_SECONDS } from '../lib/audio/mic.svelte';
 	import { hzToNoteName } from '../lib/dsp/notes';
 	import { describeDistance } from '../lib/dsp/zones';
@@ -125,6 +126,12 @@
 			{/if}
 		</p>
 		{#if sentence}<p class="note">{sentence}</p>{/if}
+		{#if zone}
+			<div class="tone">
+				<ReferenceTone hz={(zone.low + zone.high) / 2} />
+				<p class="muted small">A quiet tone at the middle of your practice zone.</p>
+			</div>
+		{/if}
 		<p class="muted small">Approximate measurement, not a diagnosis.</p>
 		<Meter level={mic.level} peak={mic.peak} db={mic.db} clipping={mic.clipping} />
 		{#if mic.clipping}
@@ -234,6 +241,9 @@
 	}
 	.sheet-card .row {
 		margin-top: 1rem;
+	}
+	.tone {
+		margin: 0.75rem 0 0;
 	}
 	.footer {
 		margin-top: 2rem;
