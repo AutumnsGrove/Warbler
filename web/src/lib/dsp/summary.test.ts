@@ -29,17 +29,31 @@ describe('summarisePitch', () => {
 });
 
 describe('suggestZone', () => {
-	it('suggests a zone around the middle, never thinner than the minimum', () => {
-		const summary = summarisePitch([150, 150, 150, 150, 151, 150, 149, 150, 150, 150])!;
+	it('suggests a band around the middle, never as wide as the whole voice', () => {
+		// Autumn's real measurement on 2026-11-08: median about 151 Hz, but her
+		// pitch moved 103-199 Hz while speaking. The zone must not become 103-199.
+		const summary = { count: 300, median: 151, p10: 103, p90: 199, seconds: 6 };
 		const zone = suggestZone(summary)!;
-		expect(zone.low).toBe(150 - MIN_HALF_WIDTH);
-		expect(zone.high).toBe(150 + MIN_HALF_WIDTH);
+		expect(zone.low).toBe(136);
+		expect(zone.high).toBe(166);
 	});
 
-	it('uses the spread when the voice moves around a lot', () => {
+	it('uses a tenth of the middle pitch, and never less than the minimum', () => {
+		const steady = summarisePitch([150, 150, 150, 150, 151, 150, 149, 150, 150, 150])!;
+		const zone = suggestZone(steady)!;
+		expect(zone.low).toBe(150 - 15);
+		expect(zone.high).toBe(150 + 15);
+
+		// A very low voice must not get a band thinner than MIN_HALF_WIDTH.
+		const low = suggestZone({ count: 20, median: 60, p10: 58, p90: 62, seconds: 6 })!;
+		expect(low.high - low.low).toBe(2 * MIN_HALF_WIDTH);
+	});
+
+	it('uses a tenth of the middle pitch for a voice that moves a lot', () => {
 		const values = Array.from({ length: 100 }, (_, i) => 120 + i); // 120 to 219
 		const zone = suggestZone(summarisePitch(values)!)!;
-		expect(zone.high - zone.low).toBeGreaterThan(2 * MIN_HALF_WIDTH);
+		const centre = Math.round((zone.low + zone.high) / 2);
+		expect(zone.high - zone.low).toBeCloseTo(Math.round(centre * 0.1) * 2, -1);
 	});
 
 	it('suggests nothing from nothing', () => {

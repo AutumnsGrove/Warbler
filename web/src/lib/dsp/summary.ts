@@ -29,6 +29,17 @@ export interface PitchSummary {
 /** The narrowest zone worth showing, in Hz either side of the middle. */
 export const MIN_HALF_WIDTH = 8;
 
+/**
+ * How wide the suggested zone is, as a fraction of the middle pitch.
+ *
+ * Speaking pitch naturally moves a long way in a few seconds: intonation, a
+ * question at the end of a sentence, a laugh. Measured over six seconds, those
+ * movements can span more than half an octave, which would make a "zone" as
+ * wide as the whole voice and useless for practice. A tenth of the middle pitch
+ * either side is a comfortable band to aim at: about three semitones in total.
+ */
+export const ZONE_HALF_FRACTION = 0.1;
+
 function percentile(sorted: number[], fraction: number): number {
 	if (sorted.length === 0) return 0;
 	const position = (sorted.length - 1) * fraction;
@@ -61,14 +72,30 @@ export function voicedFrequencies(frames: PitchFrame[]): number[] {
 }
 
 /**
- * The zone to suggest: the middle 80% of the readings, widened so it is never
- * narrower than 2 x MIN_HALF_WIDTH.
+ * The zone to suggest: a band around the middle of what was heard.
+ *
+ * Deliberately not the whole measured spread. The 10th and 90th percentile are
+ * still reported, because telling someone their voice moved between two numbers
+ * is genuinely useful; but the zone itself is the middle, so practice has a
+ * direction rather than covering everything the voice already does.
  */
 export function suggestZone(summary: PitchSummary | null): Zone | null {
 	if (!summary || summary.median <= 0) return null;
 	const centre = Math.round(summary.median);
-	const halfWidth = Math.max(MIN_HALF_WIDTH, Math.round((summary.p90 - summary.p10) / 2));
+	const halfWidth = Math.max(MIN_HALF_WIDTH, Math.round(summary.median * ZONE_HALF_FRACTION));
 	return { low: Math.max(1, centre - halfWidth), high: centre + halfWidth };
+}
+
+/**
+ * A sentence about how far the voice moved, which is information rather than a
+ * target. Returns null when the movement was small enough to be uninteresting.
+ */
+export function describeRange(summary: PitchSummary | null): string | null {
+	if (!summary) return null;
+	const low = Math.round(summary.p10);
+	const high = Math.round(summary.p90);
+	if (high - low < 20) return null;
+	return `While you spoke, your pitch moved between about ${low} and ${high} Hz. That is normal for speech.`;
 }
 
 /** A few words for the screen, with the note name so it means something. */

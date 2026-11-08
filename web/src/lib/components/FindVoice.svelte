@@ -10,7 +10,7 @@
 	import { onDestroy } from 'svelte';
 	import { mic } from '../audio/mic.svelte';
 	import { hzToNoteName } from '../dsp/notes';
-	import { describeSummary, suggestZone, summarisePitch, voicedFrequencies, type PitchSummary } from '../dsp/summary';
+	import { describeRange, describeSummary, suggestZone, summarisePitch, voicedFrequencies, type PitchSummary } from '../dsp/summary';
 	import type { Zone } from '../dsp/zones';
 	import { settings } from '../settings/store.svelte';
 
@@ -82,8 +82,9 @@
 
 	{#if summary && zone}
 		<p class="result">{describeSummary(summary, hzToNoteName(summary.median))}</p>
+		{#if describeRange(summary)}<p class="hint">{describeRange(summary)}</p>{/if}
 		<p class="hint">
-			Suggested zone: {zone.low}–{zone.high} Hz, from the middle of where you speak.
+			Suggested practice zone: {zone.low}–{zone.high} Hz, a band around the middle of your voice.
 		</p>
 		<button class="primary" onclick={apply}>
 			Use {zone.low}–{zone.high} Hz
