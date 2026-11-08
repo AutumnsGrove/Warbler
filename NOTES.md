@@ -41,7 +41,7 @@ Findings, test results and open questions, in the order they are learned. Each e
 |---|---|
 | First image published to GHCR (`r26.4e14c5f`, amd64 and arm64), anonymous lookup works | Done. Verified by the agent, 2026-10-30 |
 | Update from Settings works end to end | Done 2026-10-30, driven through the app's own endpoints over Tailscale: `r28.6071538` to `r29.9fbf7e3` in 22 seconds, result ok. Other services untouched |
-| Update from Meridian works end to end | Waiting. Pull request AutumnsGrove/Meridian#8 (not merged) adds the example config and docs; the root-owned `/etc/meridian/targets.json` and `observe.json` on the potato still need the entry, applied by Autumn |
+| Update from Meridian works end to end | **Done 2026-11-08.** Autumn pressed update from Meridian; Warbler went from `r36.50f3710` to `r38.69f724b` in 22 seconds and stayed up (checked afterwards: `/healthz` ok, updater `ready`, new heartbeat). Other services untouched. Pull request AutumnsGrove/Meridian#8 (examples and docs) remains unmerged by choice |
 | Deliberately broken build rolled back | First run 2026-10-30: rolled back correctly in about 23 seconds, Warbler stayed up on `r29.9fbf7e3`. **Found a bug**: the failure message contained a tab from Docker's log output, which made the result file invalid JSON, so the app showed "no result" instead of "failed". Fixed three ways (watcher escaping, app treats unreadable result as a failure, UI gives up waiting after 90s) with regression tests. Re-run after the fix, same day: rolled back in 24 seconds and the app's status endpoint showed `failed` with the readable reason; the test channel was then removed and Warbler updated normally to `r30.2db0556` |
 
 ### Meridian pull request
@@ -87,6 +87,10 @@ Autumn re-tested the pause and resume fix on her iPhone, on the build the potato
 - **Not captured:** the Diagnostics event log text. Autumn could not paste it from her phone into the chat, so exactly which signal fired first in each case is not recorded. The behaviour itself was confirmed by eye and by the meter, which is enough to accept the fix; the log remains available on the phone if a later regression needs investigating.
 - **Usability finding:** the Diagnostics page has a Copy report button but getting that text off the phone into a conversation is awkward. If phone reports are needed again in a later phase, consider a way to save the report to a file or show it as a short shareable link. Not needed for Phase 0.
 
-### Still open after this
+### Meridian update, 2026-11-08
 
-- An update from Meridian has not been tested end to end. A newer image now exists (the 2026-11-08 merge), so the test is possible; doing it after a Settings update would leave nothing for Meridian to find, so it should come first.
+Autumn updated Warbler from Meridian (the sibling dashboard that watches this project) and it worked end to end: `r36.50f3710` to `r38.69f724b` in 22 seconds. Checked straight afterwards from the Mac: `/healthz` reports `ok`, `/api/version` reports the new build, and the updater heartbeat is current with state `ready`. Nothing else on the potato was touched.
+
+Worth noting for future sessions: she first thought she had already run this test, then found she had not. The check that caught it was reading the running version from the potato.
+
+That closes the last item in Phase 0's "Done when" list.

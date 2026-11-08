@@ -8,9 +8,9 @@ Last updated 2026-11-08.
 
 **Planning is complete.** `PLAN.md` plus eight design docs in `docs/` and 30 drafted lessons in `web/content/lessons/` (all `status: draft`, all reviewed and approved by Autumn).
 
-**Phase 0 is built and live, and every phone check now passes.** Warbler runs in Docker on the potato at `https://lepotato.taild95077.ts.net:8892`, behind Tailscale with the identity lock enforced. Updating works end to end (Settings button, and the host watcher with rollback). CI is green and publishes a multi-arch image to `ghcr.io/autumnsgrove/warbler`. The repo is public and MIT licensed.
+**Phase 0 is closed.** Warbler runs in Docker on the potato at `https://lepotato.taild95077.ts.net:8892`, behind Tailscale with the identity lock enforced. Updating works end to end both ways: the Settings button, and an update from Meridian (`r36.50f3710` to `r38.69f724b` in 22 seconds on 2026-11-08). A deliberately broken build rolls back. The host watcher and rollback are proven. CI is green and publishes a multi-arch image to `ghcr.io/autumnsgrove/warbler`. The repo is public and MIT licensed. Every item in Phase 0's "Done when" is now met and recorded in `NOTES.md`.
 
-One gate item remains: an update from Meridian has still not been tested end to end, because until the 2026-11-08 merge there was no newer image to update to. A newer image now exists, so the test is possible and should be done before pressing Update in Settings.
+**Next is Phase 1 (live pitch).** Nothing in it has been written yet.
 
 ## Phone test results (iPhone, installed app) - `NOTES.md` has the table
 
@@ -22,14 +22,20 @@ One gate item remains: an update from Meridian has still not been tested end to 
 
 ## Do next
 
-1. **Meridian step 10** (Autumn): config is applied. A newer image now exists, so try an update from Meridian and record it in `NOTES.md`. Do this before updating from Settings, otherwise Meridian has nothing newer to find.
-2. **Close Phase 0** once that passes, then start Phase 1 (live pitch). Read `docs/testing.md` first: the 20-minute recording session is due before pitch validation.
+1. **Phase 1, live pitch.** Read `docs/testing.md` first, then the DSP specification in `PLAN.md` and `docs/screens.md`. First code step is the audio worklet (decimate, then YIN pitch detection, plus level), with chunk-equivalence tests: the same audio split into different chunk sizes must give the same answer.
+2. **[HUMAN] The 20-minute recording session** (Autumn) is due before pitch can be validated against Praat. It has not been done yet; do not start validation until the recordings exist in `local-recordings/`, which never gets committed.
+
+## Commands for Phase 1
+
+- `make dev` runs the Go API with the lock off plus the Vite dev server, for desktop testing.
+- `make test-web` covers the worklet and analysis tests; run `make test-web-clean` before pushing anything under `web/`.
 
 ## Facts worth knowing
 
 - **Reach the potato:** `ssh potato-remote` (Tailscale) or `ssh potato` (home network only). Not `lepotato`. Passwordless sudo. Checkout at `~/Warbler`, port 8892.
 - **The potato's checkout only changes with `git pull`.** Updates replace the image, not the compose file, watcher script or units.
 - **Rollback test:** publish with `gh workflow run CI -f broken=true`, add `WARBLER_UPDATE_TAG=broken-test` to the potato's `.env`, update, then remove the line. Done twice; it found and fixed a real bug.
+- **Meridian updates work** (tested 2026-11-08, `r36.50f3710` to `r38.69f724b` in 22 seconds). To tell whether an update really happened, read the running version: `curl https://lepotato.taild95077.ts.net:8892/api/version` from the Mac. Believing an update ran is not evidence; the version number is.
 - Autumn's Tailscale login lives only in the potato's `.env`. Never put it in the repo.
 - **Do not update the potato yourself**; Autumn does that from Settings.
 - `~/node_modules` (her home folder) can make web checks pass locally while CI fails. Use `make test-web-clean`.
