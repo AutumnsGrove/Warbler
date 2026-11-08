@@ -22,13 +22,17 @@ Last updated 2026-11-08.
 
 ## Do next
 
-1. **Phase 1, live pitch.** Read `docs/testing.md` first, then the DSP specification in `PLAN.md` and `docs/screens.md`. First code step is the audio worklet (decimate, then YIN pitch detection, plus level), with chunk-equivalence tests: the same audio split into different chunk sizes must give the same answer.
-2. **[HUMAN] The 20-minute recording session** (Autumn) is due before pitch can be validated against Praat. It has not been done yet; do not start validation until the recordings exist in `local-recordings/`, which never gets committed.
+1. **Phase 1, live pitch: built, waiting on phone checks.** The analysis chain, settings, trace, stop screen, break prompt, session limit, Self-test screen, reference tone and the Python/Praat validator are all in and pushed. `make test` is green.
+2. **[HUMAN] Phone checks for Phase 1** (Autumn): open Settings then Tools then Self-test and report the numbers; then a 10-minute session to check for heat, stutter and growing delay.
+3. **[HUMAN] The 20-minute recording session** is still due before real-voice validation against Praat can run. Files go in `local-recordings/`, which is never committed.
+4. After those, close Phase 1 and read `docs/data-api.md` for Phase 2 (sessions and storage).
 
 ## Commands for Phase 1
 
 - `make dev` runs the Go API with the lock off plus the Vite dev server, for desktop testing.
-- `make test-web` covers the worklet and analysis tests; run `make test-web-clean` before pushing anything under `web/`.
+- `make test-web` covers the analysis tests; run `make test-web-clean` before pushing anything under `web/`.
+- `make validate-pitch` rebuilds the Python synthetic voices and checks Warbler against Praat.
+- Hidden screens: `/self-test` (known tones through the real analyser) and `/diagnostics`.
 
 ## Facts worth knowing
 

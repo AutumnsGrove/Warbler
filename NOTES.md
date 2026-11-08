@@ -94,3 +94,40 @@ Autumn updated Warbler from Meridian (the sibling dashboard that watches this pr
 Worth noting for future sessions: she first thought she had already run this test, then found she had not. The check that caught it was reading the running version from the potato.
 
 That closes the last item in Phase 0's "Done when" list.
+
+## Phase 1
+
+### Where the pitch analysis runs, and why it differs from PLAN.md
+
+`PLAN.md` says the audio worklet does the decimation and the YIN pitch search. It does not, by Autumn's decision on 2026-11-08:
+
+- The worklet only **copies** sound, in roughly 50 ms pieces, and hands each piece to a **Web Worker**.
+- The worker runs the same TypeScript modules that the tests run (`web/src/lib/dsp/`).
+
+Reason: a worklet is a separate JavaScript file loaded by the browser at run time, so vitest cannot import it. The tested maths and the running maths would have been two copies that could drift apart, and the "chunk equivalence" rule in `docs/testing.md` exists precisely because those seams are where bugs live. A copying job is small enough that it does not need tests, and it is one screen of code to review by eye.
+
+Consequence to remember: the analysis runs off the audio thread, so a slow phone shows up as late readings, not as stuttering sound.
+
+### Bugs the tests found (worth knowing about, in case they come back)
+
+1. **Framer emitted windows depending on chunk size.** Copying a whole block before checking the hop meant one large block produced one window instead of several. Fixed by taking samples one at a time.
+2. **One low-pass stage was not steep enough.** A 10 kHz tone folded down to 2 kHz after decimation and looked like a real pitch. Fixed with two cascaded stages (fourth-order Butterworth).
+3. **YIN reported 300 Hz for a 600 Hz tone** by locking onto a lower octave. Fixed by searching the whole window and then refusing answers outside the requested range.
+4. **The display smoother averaged across gaps**, inventing a value in the middle of silence. Now smoothing stops at a gap.
+5. **Low pitches through strong resonances were missed entirely.** A 70 Hz synthetic voice has shallow ripples in the difference curve; taking the first dip below the threshold found a ripple, not the repeat. Now the earliest dip must be nearly as deep as the deepest one.
+6. **Exactly 70 Hz was thrown away** because interpolation nudged the answer to 69.97 Hz, just under the 70 Hz floor. Now a 1% overshoot at the edge is clamped back inside; anything further out still reports nothing.
+
+### The Python validator
+
+- `tools/validate/synth.py` builds 34 synthetic voices (10 pitches down to 70 Hz and up to 500 Hz, three vowels, two unusual vocal-tract sizes, two noisy cases). Standard library only.
+- `tools/validate/pitch_check.py` compares Praat's pitch for the same files. **Praat agrees with the known answers to within 0.08%**, so the test sounds are sound.
+- The app's own measurement of those files is `web/src/lib/dsp/validation.test.ts`. It skips when the files have not been generated, so CI does not need Python.
+- `make validate-pitch` runs both halves.
+- **Packaging finding:** depending on `parselmouth` makes uv pull `googleads==3.8.0`, which fails to build on modern setuptools (`use_2to3 is invalid`). Depending on `praat-parselmouth` instead resolves cleanly and imports as `parselmouth`. Use that name if this is ever set up again.
+
+### Still to do before Phase 1 can be called done
+
+- [HUMAN] Run the Self-test screen on the phone (Settings, then Tools) and report the numbers it shows.
+- [HUMAN] A 10-minute session on the phone: no heat, no stutter, no growing delay. This cannot be simulated.
+- [HUMAN] The 20-minute recording session from `docs/testing.md` layer 3, into `local-recordings/`, so real-voice comparison against Praat can run.
+- Autonomy: whether the trace still reads well when the phone is at arm's length is a judgement only Autumn can make.
