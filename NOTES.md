@@ -131,3 +131,11 @@ Consequence to remember: the analysis runs off the audio thread, so a slow phone
 - [HUMAN] A 10-minute session on the phone: no heat, no stutter, no growing delay. This cannot be simulated.
 - [HUMAN] The 20-minute recording session from `docs/testing.md` layer 3, into `local-recordings/`, so real-voice comparison against Praat can run.
 - Autonomy: whether the trace still reads well when the phone is at arm's length is a judgement only Autumn can make.
+
+### CI finding, 2026-11-08: Node types and the clean-room check
+
+The first push containing `web/src/lib/dsp/validation.test.ts` failed in CI while passing locally: the test imports `node:fs` to read the Python-generated files, and CI has no Node type definitions. The local pass came from a stray `~/node_modules` in Autumn's home folder, exactly the hazard `AGENTS.md` describes.
+
+Fix: `@types/node` added as a dev dependency of `web/`, so the type check sees what the test actually uses. After the fix, `make test-web-clean` and CI both pass, and the image for `r49.e01f40e` published.
+
+Lesson for later phases: any test that reaches outside the browser (reading files, benchmarking) needs its types declared, or CI will disagree with the local machine.
