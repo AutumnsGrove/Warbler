@@ -18,7 +18,11 @@
 
 import { eventLog } from '../eventlog.svelte';
 import { dbToMeter, holdPeak, isClipping, rmsFromSums, smoothLevel, toDbfs } from '../dsp/level';
+import { medianSmooth, type PitchFrame } from '../dsp/pitch';
 import { pauseReason } from './health';
+
+/** How much pitch history to keep on the screen, in seconds. */
+export const TRACE_SECONDS = 10;
 
 export type MicState = 'idle' | 'starting' | 'running' | 'paused' | 'denied' | 'error';
 
@@ -51,10 +55,16 @@ class MicSession {
 	baseLatency = $state<number | null>(null);
 	granted = $state<GrantedSettings | null>(null);
 	message = $state('');
+	/** Pitch readings from the last few seconds, raw and un-smoothed. */
+	frames = $state<PitchFrame[]>([]);
+	/** Smoothed pitch to show, or null when there is nothing confident to show. */
+	pitchHz = $state<number | null>(null);
 
 	private ctx: AudioContext | null = null;
 	private stream: MediaStream | null = null;
 	private node: AudioWorkletNode | null = null;
+	private pitchNode: AudioWorkletNode | null = null;
+	private pitchWorker: Worker | null = null;
 	private source: MediaStreamAudioSourceNode | null = null;
 	private wakeLock: WakeLockSentinel | null = null;
 	private watchdog: ReturnType<typeof setInterval> | null = null;
@@ -91,7 +101,7 @@ class MicSession {
 			this.baseLatency = this.ctx.baseLatency ? this.ctx.baseLatency : null;
 			eventLog.add(`Audio running at ${this.ctx.sampleRate} Hz`);
 
-			await this.ctx.audioWorklet.addModule('/level-worklet.js');
+			await this.ctx.audioWorklet.addModule('/mic-worklet.js');
 			this.node = new AudioWorkletNode(this.ctx, 'level-processor', {
 				numberOfInputs: 1,
 				numberOfOutputs: 1,
@@ -99,6 +109,7 @@ class MicSession {
 			});
 			this.node.port.onmessage = (e: MessageEvent<{ sumSq: number; count: number; peak: number }>) =>
 				this.onLevel(e.data);
+			this.startPitchAnalysis(this.ctx.sampleRate);
 
 			// The worklet is routed to the speakers through a gain of zero. Some
 			// browsers only run audio nodes that lead to the output, and zero
@@ -121,6 +132,70 @@ class MicSession {
 		}
 	}
 
+	/*
+	 * Pitch wiring. The audio thread hands over raw sound in ~50 ms pieces;
+	 * those are passed straight to a Web Worker, which owns all the arithmetic.
+	 * Nothing is analysed on the main thread, so drawing and tapping stay smooth.
+	 */
+	private startPitchAnalysis(sampleRate: number): void {
+		if (!this.ctx) return;
+		try {
+			this.pitchNode = new AudioWorkletNode(this.ctx, 'pitch-processor', {
+				numberOfInputs: 1,
+				numberOfOutputs: 1,
+				channelCount: 1
+			});
+			this.pitchNode.port.onmessage = (e: MessageEvent<{ samples: Float32Array }>) =>
+				this.pitchWorker?.postMessage({ type: 'samples', samples: e.data.samples });
+
+			// The worklet is routed to the speakers through a gain of zero. Some
+			// browsers only run audio nodes that lead to the output, and zero
+			// gain means nothing is heard (so no feedback).
+			const mute = this.ctx.createGain();
+			mute.gain.value = 0;
+			this.pitchNode.connect(mute);
+			mute.connect(this.ctx.destination);
+
+			this.pitchWorker = new Worker(new URL('./pitch-worker.ts', import.meta.url), { type: 'module' });
+			this.pitchWorker.onmessage = (
+				e: MessageEvent<{ type: 'frames'; frames: PitchFrame[] } | { type: 'error'; message: string }>
+			) => {
+				if (e.data.type === 'error') {
+					eventLog.add(`Pitch analysis failed: ${e.data.message}`);
+					return;
+				}
+				this.onFrames(e.data.frames);
+			};
+			this.pitchWorker.postMessage({ type: 'start', sampleRate });
+			eventLog.add(`Pitch analysis started at ${sampleRate} Hz`);
+		} catch (err) {
+			// The volume meter must still work even if pitch analysis cannot start.
+			this.stopPitchAnalysis();
+			eventLog.add(`Pitch analysis unavailable: ${err instanceof Error ? err.message : 'unknown'}`);
+		}
+	}
+
+	private onFrames(frames: PitchFrame[]): void {
+		if (frames.length === 0) return;
+		const newest = frames[frames.length - 1];
+		// Keep only the last TRACE_SECONDS of readings, so memory stays flat.
+		const cutoff = newest.at - TRACE_SECONDS;
+		this.frames = [...this.frames.filter((f) => f.at >= cutoff), ...frames];
+		// Smooth only for display; the stored readings stay raw (PLAN.md).
+		const tail = this.frames.slice(-5).map((f) => f.hz);
+		const smoothed = medianSmooth(tail, 5);
+		this.pitchHz = smoothed[smoothed.length - 1] ?? null;
+	}
+
+	private stopPitchAnalysis(): void {
+		this.pitchNode?.disconnect();
+		this.pitchNode = null;
+		this.pitchWorker?.terminate();
+		this.pitchWorker = null;
+		this.frames = [];
+		this.pitchHz = null;
+	}
+
 	async stop(): Promise<void> {
 		this.stopWatching();
 		this.needsTap = false;
@@ -128,6 +203,7 @@ class MicSession {
 		this.source = null;
 		this.node?.disconnect();
 		this.node = null;
+		this.stopPitchAnalysis();
 		this.stream?.getTracks().forEach((t) => t.stop());
 		this.stream = null;
 		await this.wakeLock?.release().catch(() => {});
@@ -202,6 +278,7 @@ class MicSession {
 		this.source?.disconnect();
 		this.source = this.ctx.createMediaStreamSource(this.stream);
 		this.source.connect(this.node);
+		if (this.pitchNode) this.source.connect(this.pitchNode);
 	}
 
 	/**
@@ -265,6 +342,10 @@ class MicSession {
 			this.state = 'paused';
 			this.message = why;
 			eventLog.add(why);
+			// Start the next stretch of sound cleanly instead of stitching it onto
+			// the moment before the interruption.
+			this.pitchWorker?.postMessage({ type: 'reset' });
+			this.pitchHz = null;
 		}
 	}
 
@@ -299,6 +380,7 @@ class MicSession {
 
 	private async cleanupAfterFailure(): Promise<void> {
 		this.stopWatching();
+		this.stopPitchAnalysis();
 		this.stream?.getTracks().forEach((t) => t.stop());
 		this.stream = null;
 		await this.ctx?.close().catch(() => {});
