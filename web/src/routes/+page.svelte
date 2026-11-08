@@ -8,13 +8,33 @@
 	import { describeDistance } from '../lib/dsp/zones';
 	import { practiceZone, startZone } from '../lib/settings/settings';
 	import { settings } from '../lib/settings/store.svelte';
+	import {
+		PRACTICE_BANNER,
+		STOP_SCREEN_LINES,
+		formatClock,
+		requiresStopScreen,
+		sessionPhase
+	} from '../lib/session/practice';
 	import { runningVersion } from '../lib/api';
 	import { onMount } from 'svelte';
 
 	let version = $state<string | null>(null);
-	onMount(async () => (version = await runningVersion()));
+	let acknowledged = $state(false);
+	let startedAt = $state<number | null>(null);
+	let now = $state(Date.now());
+	let breaksTaken = $state(0);
+
+	onMount(() => {
+		void runningVersion().then((v) => (version = v));
+		// A one-second tick drives the clock, the break prompt and the session limit.
+		const tick = setInterval(() => (now = Date.now()), 1000);
+		return () => clearInterval(tick);
+	});
 
 	const values = $derived(settings.values);
+	const plan = $derived({ sessionMinutes: values.sessionMinutes, breakMinutes: values.breakMinutes });
+	const phase = $derived(sessionPhase(startedAt, now, plan, breaksTaken, mic.state === 'running'));
+	const elapsed = $derived(startedAt === null ? 0 : Math.floor((now - startedAt) / 1000));
 	const rate = $derived(mic.sampleRate ? `${mic.sampleRate.toLocaleString()} Hz` : null);
 	const hzText = $derived(mic.pitchHz === null ? null : `${Math.round(mic.pitchHz)} Hz`);
 	const noteText = $derived(
@@ -24,6 +44,24 @@
 	const zone = $derived(practiceZone(values));
 	const startBand = $derived(values.voiceOnly ? null : startZone(values));
 	const sentence = $derived(describeDistance(mic.pitchHz, zone, 'your practice zone'));
+
+	/** Start the microphone, then begin timing only if it actually started. */
+	async function startPractice(): Promise<void> {
+		await mic.start();
+		if (mic.state === 'running') {
+			startedAt = Date.now();
+			now = Date.now();
+			breaksTaken = 0;
+		}
+	}
+
+	/** End the session and reset the gate, so the next start passes the stop screen again. */
+	async function finish(): Promise<void> {
+		await mic.stop();
+		startedAt = null;
+		breaksTaken = 0;
+		acknowledged = false;
+	}
 </script>
 
 <svelte:head><title>Warbler</title></svelte:head>
@@ -34,15 +72,26 @@
 </header>
 
 {#if mic.active}
-	<p class="safety">Stop if anything hurts or strains.</p>
+	<p class="safety">{PRACTICE_BANNER}</p>
 {/if}
 
 {#if mic.state === 'idle' || mic.state === 'starting'}
-	<p class="muted">Tap the button, allow the microphone, and say something. The bar should move.</p>
-	<button class="primary start" onclick={() => mic.start()} disabled={mic.state === 'starting'}>
-		<Mic size={26} aria-hidden="true" />
-		{mic.state === 'starting' ? 'Starting...' : 'Tap to start'}
-	</button>
+	{#if requiresStopScreen(acknowledged)}
+		<div class="card">
+			<h2>Before you start</h2>
+			{#each STOP_SCREEN_LINES as line}
+				<p>{line}</p>
+			{/each}
+			<p class="muted small">This appears before every practice. Warbler never asks you to push through discomfort.</p>
+		</div>
+		<button class="primary start" onclick={() => (acknowledged = true)}>I understand, continue</button>
+	{:else}
+		<p class="muted">Tap the button, allow the microphone, and say something. The line should move.</p>
+		<button class="primary start" onclick={startPractice} disabled={mic.state === 'starting'}>
+			<Mic size={26} aria-hidden="true" />
+			{mic.state === 'starting' ? 'Starting...' : 'Tap to start'}
+		</button>
+	{/if}
 {:else if mic.state === 'denied' || mic.state === 'error'}
 	<div class="card">
 		<h2>Warbler cannot hear you yet</h2>
@@ -84,13 +133,37 @@
 		{#if mic.state === 'paused'}
 			<p class="note">{mic.message || 'The microphone was interrupted.'}</p>
 		{/if}
+		<p class="muted small">
+			{formatClock(elapsed)} of {values.sessionMinutes}:00 in this session
+		</p>
 		{#if rate}<p class="muted small">Your phone is listening at {rate}.</p>{/if}
 	</div>
 	<div class="row">
 		{#if mic.state === 'paused'}
 			<button class="primary" onclick={() => mic.resume()}>Resume</button>
 		{/if}
-		<button onclick={() => mic.stop()}><Square size={18} aria-hidden="true" /> Stop</button>
+		<button onclick={finish}><Square size={18} aria-hidden="true" /> Stop</button>
+	</div>
+{/if}
+
+{#if phase === 'break-due'}
+	<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="break-title">
+		<div class="sheet-card">
+			<h2 id="break-title">Time for a short break</h2>
+			<p>Sip some water, rest your voice for a minute.</p>
+			<div class="row">
+				<button onclick={() => (breaksTaken += 1)}>Keep going</button>
+				<button class="primary" onclick={finish}>Finish</button>
+			</div>
+		</div>
+	</div>
+{:else if phase === 'over'}
+	<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="end-title">
+		<div class="sheet-card">
+			<h2 id="end-title">You have reached your session limit</h2>
+			<p>Good place to stop. The limit can be changed in Settings, when you choose.</p>
+			<button class="primary" onclick={finish}>Finish</button>
+		</div>
 	</div>
 {/if}
 
@@ -140,6 +213,27 @@
 		background: var(--paper);
 		color: var(--muted);
 		font-size: 0.9rem;
+	}
+	.sheet {
+		position: fixed;
+		inset: 0;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		background: rgb(22 18 13 / 0.72);
+		padding: 1rem;
+		z-index: 20;
+	}
+	.sheet-card {
+		width: min(30rem, 100%);
+		background: var(--paper);
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		padding: 1.25rem;
+		margin-bottom: 4.5rem;
+	}
+	.sheet-card .row {
+		margin-top: 1rem;
 	}
 	.footer {
 		margin-top: 2rem;
