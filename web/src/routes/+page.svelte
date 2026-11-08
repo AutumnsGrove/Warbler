@@ -2,7 +2,9 @@
 	import Mic from '@lucide/svelte/icons/mic';
 	import Square from '@lucide/svelte/icons/square';
 	import Meter from '../lib/components/Meter.svelte';
-	import { mic } from '../lib/audio/mic.svelte';
+	import PitchTrace from '../lib/components/PitchTrace.svelte';
+	import { mic, TRACE_SECONDS } from '../lib/audio/mic.svelte';
+	import { hzToNoteName } from '../lib/dsp/notes';
 	import { runningVersion } from '../lib/api';
 	import { onMount } from 'svelte';
 
@@ -10,6 +12,8 @@
 	onMount(async () => (version = await runningVersion()));
 
 	const rate = $derived(mic.sampleRate ? `${mic.sampleRate.toLocaleString()} Hz` : null);
+	const hzText = $derived(mic.pitchHz === null ? null : `${Math.round(mic.pitchHz)} Hz`);
+	const noteText = $derived(mic.pitchHz === null ? null : hzToNoteName(mic.pitchHz));
 </script>
 
 <svelte:head><title>Warbler</title></svelte:head>
@@ -18,6 +22,10 @@
 	<img src="/favicon.svg" alt="" width="44" height="44" />
 	<h1>Warbler</h1>
 </header>
+
+{#if mic.active}
+	<p class="safety">Stop if anything hurts or strains.</p>
+{/if}
 
 {#if mic.state === 'idle' || mic.state === 'starting'}
 	<p class="muted">Tap the button, allow the microphone, and say something. The bar should move.</p>
@@ -42,8 +50,16 @@
 {:else}
 	<div class="card">
 		<h2>{mic.state === 'paused' ? 'Paused' : 'Listening'}</h2>
+		<PitchTrace frames={mic.frames} seconds={TRACE_SECONDS} />
+		<p class="readout">
+			{#if hzText}
+				{hzText} <span class="note-name">note {noteText}</span>
+			{:else}
+				<span class="muted">{mic.state === 'paused' ? 'No reading while paused' : 'Waiting for your voice'}</span>
+			{/if}
+		</p>
+		<p class="muted small">Approximate measurement, not a diagnosis.</p>
 		<Meter level={mic.level} peak={mic.peak} db={mic.db} clipping={mic.clipping} />
-		<p class="readout">{Math.round(mic.db)} dB</p>
 		{#if mic.clipping}
 			<p class="note">That was very loud and the sound got distorted. Try a little more distance.</p>
 		{/if}
@@ -89,9 +105,23 @@
 		flex: 1;
 	}
 	.readout {
-		font-size: 1.5rem;
+		font-size: 1.75rem;
 		font-weight: 600;
-		margin: 0.75rem 0 0.25rem;
+		margin: 0.75rem 0 0.15rem;
+	}
+	.note-name {
+		font-size: 1.1rem;
+		font-weight: 500;
+		color: var(--muted);
+	}
+	.safety {
+		margin: 0 0 0.75rem;
+		padding: 0.6rem 0.9rem;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-small);
+		background: var(--paper);
+		color: var(--muted);
+		font-size: 0.9rem;
 	}
 	.footer {
 		margin-top: 2rem;
