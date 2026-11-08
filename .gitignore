@@ -28,3 +28,6 @@ __pycache__/
 Thumbs.db
 .idea/
 .vscode/
+
+# Generated test sounds from tools/validate
+/tools/validate/out/

@@ -1,0 +1,10 @@
+[project]
+name = "warbler-validate"
+version = "0.1.0"
+description = "Synthetic voices and Praat comparisons for validating Warbler's measurements"
+requires-python = ">=3.11"
+# parselmouth runs Praat itself, which is the trusted second opinion.
+dependencies = ["praat-parselmouth>=0.4"]
+
+[tool.uv]
+package = false

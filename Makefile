@@ -6,7 +6,7 @@ IMAGE   ?= ghcr.io/autumnsgrove/warbler
 DEV_PORT ?= 8892
 
 .DEFAULT_GOAL := help
-.PHONY: help dev web build build-arm64 test test-go test-web test-web-clean test-scripts test-watcher lint icons docker docker-run deploy clean
+.PHONY: help dev web build build-arm64 test test-go test-web test-web-clean test-scripts test-watcher lint icons validate-pitch docker docker-run deploy clean
 
 help: ## List the commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-14s %s\n", $$1, $$2}'
@@ -50,6 +50,10 @@ test-watcher: ## Tests for the host update watcher (fake docker and curl)
 
 lint: ## gofmt check
 	@test -z "$$(gofmt -l server web)" || (gofmt -l server web; echo "gofmt needed"; exit 1)
+
+validate-pitch: ## Make synthetic voices in Python and check Warbler against them (needs uv)
+	cd tools/validate && uv run python pitch_check.py
+	cd web && pnpm exec vitest run src/lib/dsp/validation.test.ts
 
 icons: ## Regenerate the app icons
 	python3 tools/icons/make_icons.py

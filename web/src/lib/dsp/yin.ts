@@ -106,49 +106,45 @@ export function yin(
 	const threshold = options.threshold ?? DEFAULT_THRESHOLD;
 	if (!(sampleRate > 0) || window.length === 0 || minHz <= 0 || maxHz <= minHz) return null;
 
+	// Search the whole range the window can hold, not just the user's range, then
+	// decide at the end whether the answer lies inside it. A shorter search would
+	// quietly report a ripple or a harmonic when the real pitch sits just outside
+	// the requested range.
 	const tauMin = Math.max(2, Math.floor(sampleRate / maxHz));
-	const tauMax = Math.min(Math.ceil(sampleRate / minHz), Math.floor(window.length / 2));
+	const tauMax = Math.floor(window.length / 2);
 	if (tauMax <= tauMin) return null;
 
 	const d = cumulativeMeanNormalised(differenceFunction(window, tauMax));
 
-	// Find the first place the curve dips below the threshold. This is the
-	// repeat length, but the dip is a few samples wide, so the true bottom has to
-	// be found from here (see below) before deciding anything.
-	let firstGood = -1;
-	for (let t = 2; t <= tauMax; t++) {
-		if (d[t] < threshold) {
-			firstGood = t;
+	// The deepest match anywhere is the best guess at the repeat length.
+	let best = 2;
+	for (let t = 3; t <= tauMax; t++) if (d[t] < d[best]) best = t;
+
+	// Take the earliest dip that is nearly as good as the deepest one. "Nearly as
+	// good" matters: a voice with a strong resonance can ripple, and a shallow
+	// ripple must not be mistaken for the repeat length just because it comes
+	// first. An early repeat is still preferred over a later one, which is what
+	// stops the answer being halved.
+	const limit = Math.min(threshold, d[best] + 0.05);
+	let tau = -1;
+	for (let t = 2; t < tauMax; t++) {
+		if (d[t] <= limit && d[t] <= d[t - 1] && d[t] <= d[t + 1]) {
+			tau = t;
 			break;
 		}
 	}
+	if (tau < 0) tau = best;
 
-	let tau: number;
-	if (firstGood >= 0) {
-		// Walk down to the bottom of that dip. The first dip is the answer:
-		// later dips are multiples of the same repeat, which would halve the
-		// reported pitch.
-		tau = firstGood;
-		while (tau + 1 <= tauMax && d[tau + 1] < d[tau]) tau++;
-	} else {
-		// No confident dip. Fall back to the deepest one inside the range, so
-		// the caller can still see how poor the match was and decide not to
-		// draw it.
-		tau = tauMin;
-		for (let t = tauMin + 1; t <= tauMax; t++) if (d[t] < d[tau]) tau = t;
-	}
-
-	// A repeat shorter than tauMin means the real pitch is above maxHz. Report
-	// nothing rather than a lower octave of the same sound.
-	if (tau < tauMin) return null;
-
-	const shift =
-		tau > tauMin && tau < tauMax
-			? interpolateLowest(d[tau - 1], d[tau], d[tau + 1])
-			: 0;
-	const hz = sampleRate / (tau + shift);
+	const shift = tau > 1 && tau < tauMax ? interpolateLowest(d[tau - 1], d[tau], d[tau + 1]) : 0;
+	const found = sampleRate / (tau + shift);
 	const clarity = Math.max(0, Math.min(1, 1 - d[tau]));
+	if (!Number.isFinite(found)) return null;
 
-	if (!Number.isFinite(hz) || hz < minHz || hz > maxHz) return null;
-	return { hz, clarity };
+	// A tiny overshoot at the edge of the range (70 Hz at a 70 Hz floor, say) is
+	// interpolation, not a different pitch: bring it back inside. Anything
+	// further out is genuinely outside what was asked for, so say nothing.
+	const edge = 0.01;
+	if (found < minHz) return found >= minHz * (1 - edge) ? { hz: minHz, clarity } : null;
+	if (found > maxHz) return found <= maxHz * (1 + edge) ? { hz: maxHz, clarity } : null;
+	return { hz: found, clarity };
 }
