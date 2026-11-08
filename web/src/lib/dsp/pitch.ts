@@ -28,6 +28,14 @@ export const HOP_MS = 15;
 export const SILENCE_RMS = 0.004;
 /** Below this match quality the reading is not trusted. */
 export const MIN_CLARITY = 0.6;
+/**
+ * How far a reading may jump from the recent average and still be believed on
+ * its own, in semitones (12 semitones is a doubling of pitch). Real voices
+ * glide; a single frame leaping an octave is almost always a mistake.
+ */
+export const MAX_JUMP_SEMITONES = 5;
+/** A jump has to be seen twice in a row, this close together, to be believed. */
+export const CONFIRM_SEMITONES = 2;
 
 /**
  * Median of a list of numbers. Used by the display smoother below.
@@ -94,6 +102,10 @@ export class PitchTracker {
 	private readonly framer: Framer;
 	private readonly options: YinOptions;
 	private framesSeen = 0;
+	/** Recent accepted pitches, used to spot a single frame jumping away. */
+	private recent: number[] = [];
+	/** A jumped-to reading waiting for a second frame to confirm it. */
+	private pending: number | null = null;
 
 	constructor(sampleRate: number, options: PitchTrackerOptions = {}) {
 		this.decimator = new Decimator(sampleRate, options.analysisRate ?? ANALYSIS_RATE);
@@ -122,6 +134,8 @@ export class PitchTracker {
 		this.decimator.reset();
 		this.framer.reset();
 		this.framesSeen = 0;
+		this.recent = [];
+		this.pending = null;
 	}
 
 	private analyse(window: Float32Array): PitchFrame {
@@ -135,6 +149,39 @@ export class PitchTracker {
 		if (!found || found.clarity < MIN_CLARITY) {
 			return { at, hz: null, clarity: found?.clarity ?? 0, rms, voiced: false };
 		}
+		// Drop a reading that leaps far from the recent average, unless the voice
+		// really has moved and the next frame says so too.
+		if (!this.believable(found.hz)) {
+			return { at, hz: null, clarity: found.clarity, rms, voiced: false };
+		}
 		return { at, hz: found.hz, clarity: found.clarity, rms, voiced: true };
+	}
+
+	private believable(hz: number): boolean {
+		const reference = this.recent.length > 0 ? median(this.recent) : null;
+		if (reference === null) {
+			this.remember(hz);
+			return true;
+		}
+		const jump = Math.abs(12 * Math.log2(hz / reference));
+		if (jump <= MAX_JUMP_SEMITONES) {
+			this.pending = null;
+			this.remember(hz);
+			return true;
+		}
+		if (this.pending !== null && Math.abs(12 * Math.log2(hz / this.pending)) <= CONFIRM_SEMITONES) {
+			// Confirmed: the voice has genuinely moved, so start a fresh average.
+			this.pending = null;
+			this.recent = [];
+			this.remember(hz);
+			return true;
+		}
+		this.pending = hz;
+		return false;
+	}
+
+	private remember(hz: number): void {
+		this.recent.push(hz);
+		if (this.recent.length > 5) this.recent.shift();
 	}
 }

@@ -24,6 +24,11 @@ import { pauseReason } from './health';
 
 /** How much pitch history to keep on the screen, in seconds. */
 export const TRACE_SECONDS = 10;
+/**
+ * How long a reading stays on screen after the sound stops. People pause
+ * between words, and a number that vanishes on every pause is unreadable.
+ */
+export const READING_HOLD_MS = 700;
 
 export type MicState = 'idle' | 'starting' | 'running' | 'paused' | 'denied' | 'error';
 
@@ -74,6 +79,10 @@ class MicSession {
 	/** Set when the app was hidden: audio may be dead, so only a tap on Resume may continue. */
 	private needsTap = false;
 	private lastResumeAt = 0;
+	/** When a confident display reading last arrived (performance.now clock). */
+	private lastPitchAt = 0;
+	/** The last confident display reading, held briefly over short pauses. */
+	private lastPitchHz: number | null = null;
 
 	get active(): boolean {
 		return this.state === 'running' || this.state === 'paused' || this.state === 'starting';
@@ -192,7 +201,17 @@ class MicSession {
 		// Smooth only for display; the stored readings stay raw (PLAN.md).
 		const tail = this.frames.slice(-5).map((f) => f.hz);
 		const smoothed = medianSmooth(tail, 5);
-		this.pitchHz = smoothed[smoothed.length - 1] ?? null;
+		const shown = smoothed[smoothed.length - 1] ?? null;
+		if (shown !== null) {
+			this.lastPitchHz = shown;
+			this.lastPitchAt = performance.now();
+			this.pitchHz = shown;
+		} else if (performance.now() - this.lastPitchAt > READING_HOLD_MS) {
+			// Held for a moment so speech pauses do not make the number blink, then
+			// cleared: an old number left up would be worse than none.
+			this.lastPitchHz = null;
+			this.pitchHz = null;
+		}
 	}
 
 	private stopPitchAnalysis(): void {
@@ -202,6 +221,7 @@ class MicSession {
 		this.pitchWorker = null;
 		this.frames = [];
 		this.pitchHz = null;
+		this.lastPitchHz = null;
 	}
 
 	async stop(): Promise<void> {

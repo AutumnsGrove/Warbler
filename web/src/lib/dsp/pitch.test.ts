@@ -153,3 +153,34 @@ describe('medianSmooth', () => {
 		expect(medianSmooth([120, 130], 3)).toEqual([125, 125]);
 	});
 });
+
+describe('PitchTracker: readings that jump away', () => {
+	function join(...parts: Float32Array[]): Float32Array {
+		const total = parts.reduce((sum, part) => sum + part.length, 0);
+		const out = new Float32Array(total);
+		let at = 0;
+		for (const part of parts) {
+			out.set(part, at);
+			at += part.length;
+		}
+		return out;
+	}
+
+	it('ignores a brief squeak far above the voice', () => {
+		// 150 Hz, a 20 ms blip an octave and a half up, then 150 Hz again.
+		const sound = join(tone(150, 0.4, RATE), tone(500, 0.02, RATE), tone(150, 0.4, RATE));
+		const frames = readings(sound).filter((f) => f.at > 0.2 && f.at < 0.6);
+		const high = frames.filter((f) => f.voiced && (f.hz as number) > 260);
+		expect(high).toHaveLength(0);
+	});
+
+	it('follows the voice when it really does move, after a moment', () => {
+		// Half a second at 150 Hz, then half a second at 300 Hz: a real jump.
+		const sound = join(tone(150, 0.5, RATE), tone(300, 0.5, RATE));
+		const frames = readings(sound);
+		const tail = frames.filter((f) => f.at > 0.8 && f.voiced && f.hz !== null);
+		expect(tail.length).toBeGreaterThan(5);
+		const near300 = tail.filter((f) => Math.abs((f.hz as number) - 300) < 12).length;
+		expect(near300 / tail.length).toBeGreaterThan(0.8);
+	});
+});

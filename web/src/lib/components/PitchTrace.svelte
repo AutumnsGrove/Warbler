@@ -14,6 +14,7 @@
 	 * Nothing here decides anything: it draws what it is given.
 	 */
 	import type { PitchFrame } from '../dsp/pitch';
+	import { medianSmooth } from '../dsp/pitch';
 	import type { Zone } from '../dsp/zones';
 
 	interface Props {
@@ -97,18 +98,26 @@
 			g.fillText(`${Math.round(hz)}`, 4, y - 4);
 		}
 
-		// The trace itself, newest sample at the right edge.
+		// The trace itself, newest sample at the right edge. Readings are smoothed
+		// for display only (a 5-frame median, as PLAN.md asks): a single odd frame
+		// would otherwise look like a dramatic leap that never happened.
+		const displayHz = medianSmooth(
+			frames.map((frame) => (frame.voiced ? frame.hz : null)),
+			5
+		);
 		const newest = frames.length > 0 ? frames[frames.length - 1].at : 0;
 		const oldest = newest - seconds;
 		const xFor = (at: number) => ((at - oldest) / seconds) * width;
 		let previous: { x: number; y: number } | null = null;
 		let drawing = false;
-		for (const frame of frames) {
-			if (frame.hz === null || !frame.voiced) {
+		for (let index = 0; index < frames.length; index++) {
+			const frame = frames[index];
+			const hz = displayHz[index];
+			if (hz === null) {
 				drawing = false;
 				continue;
 			}
-			const point = { x: xFor(frame.at), y: yFor(frame.hz) };
+			const point = { x: xFor(frame.at), y: yFor(hz) };
 			if (point.x < 0 || point.x > width) {
 				previous = null;
 				drawing = false;
@@ -129,11 +138,11 @@
 
 		// A dot on the newest confident reading, so the eye has somewhere to land.
 		for (let i = frames.length - 1; i >= 0; i--) {
-			const frame = frames[i];
-			if (frame.hz === null || !frame.voiced) break;
+			const hz = displayHz[i];
+			if (hz === null) continue;
 			g.fillStyle = oliveColour;
 			g.beginPath();
-			g.arc(xFor(frame.at), yFor(frame.hz), 3.5, 0, Math.PI * 2);
+			g.arc(xFor(frames[i].at), yFor(hz), 3.5, 0, Math.PI * 2);
 			g.fill();
 			break;
 		}

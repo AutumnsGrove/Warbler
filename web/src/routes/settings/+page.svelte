@@ -7,8 +7,17 @@
 	 * and the session limit only move when someone types or drags them.
 	 */
 	import UpdatePanel from '../../lib/components/UpdatePanel.svelte';
+	import FindVoice from '../../lib/components/FindVoice.svelte';
 	import { settings } from '../../lib/settings/store.svelte';
-	import { LIMITS, needsSetup, practiceZone, validateSettings, type Settings } from '../../lib/settings/settings';
+	import {
+		LIMITS,
+		needsSetup,
+		practiceZone,
+		startZone,
+		validateSettings,
+		type Settings
+	} from '../../lib/settings/settings';
+	import { transposeSemitones } from '../../lib/dsp/notes';
 	import { onMount } from 'svelte';
 
 	onMount(() => settings.load());
@@ -20,6 +29,21 @@
 		zone ? `${Math.round(zone.low)}–${Math.round(zone.high)} Hz` : 'not set yet'
 	);
 	const setupNeeded = $derived(needsSetup(values));
+
+	/** A starting zone with the same width, two semitones higher. Only a guess. */
+	const gentleTarget = $derived.by(() => {
+		const start = startZone(values);
+		if (!start) return null;
+		const centre = (start.low + start.high) / 2;
+		const half = Math.max(8, (start.high - start.low) / 2);
+		const moved = transposeSemitones(centre, 2);
+		return { low: Math.round(moved - half), high: Math.round(moved + half) };
+	});
+
+	function useGentleTarget(): void {
+		if (!gentleTarget) return;
+		settings.update({ targetLow: gentleTarget.low, targetHigh: gentleTarget.high });
+	}
 
 	function numberFrom(text: string): number | null {
 		const trimmed = text.trim();
@@ -86,6 +110,7 @@
 	</div>
 	<p class="hint">Where your voice sits at the moment, when you speak normally.</p>
 	{#if fieldFor('start')}<p class="note">{fieldFor('start')?.message}</p>{/if}
+	<FindVoice />
 
 	<div class="pair">
 		<label for="targetLow">Target zone, from</label>
@@ -114,6 +139,17 @@
 		</div>
 	</div>
 	<p class="hint">Where you are heading. Warbler never asks you to reach it directly.</p>
+	{#if gentleTarget}
+		<div class="suggest">
+			<p class="hint">
+				Not sure yet? A gentle first goal is about two semitones above your starting zone. This
+				is only a guess you can change, and a speech-language pathologist can help you choose.
+			</p>
+			<button onclick={useGentleTarget}>
+				Use {gentleTarget.low}–{gentleTarget.high} Hz
+			</button>
+		</div>
+	{/if}
 	{#if fieldFor('target')}<p class="note">{fieldFor('target')?.message}</p>{/if}
 
 	<div class="pair">
@@ -294,6 +330,13 @@
 		width: 1.35rem;
 		height: 1.35rem;
 		accent-color: var(--gold);
+	}
+	.suggest {
+		margin-top: 0.5rem;
+		padding: 0.75rem;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-small);
+		background: var(--sand);
 	}
 	.hint {
 		color: var(--muted);

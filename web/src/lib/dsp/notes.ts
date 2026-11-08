@@ -39,3 +39,9 @@ export function hzToCentsFromNote(hz: number): number {
 	const midi = hzToMidi(hz);
 	return (midi - Math.round(midi)) * 100;
 }
+
+/** Move a frequency by a number of semitones (2 is a whole tone, 12 an octave). */
+export function transposeSemitones(hz: number, semitones: number): number {
+	if (!(hz > 0) || !Number.isFinite(hz)) return 0;
+	return hz * Math.pow(2, semitones / 12);
+}
