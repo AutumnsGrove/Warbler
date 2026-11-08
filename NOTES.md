@@ -151,3 +151,17 @@ Autumn tested the Phase 1 build on her iPhone and reported two problems, both re
    - The number vanished during every short pause between words. It is now **held for 700 ms**, then cleared, so it does not blink but is never stale for long.
 
 Also learned: her iPhone reports **24,000 Hz** on the practice screen, not 44.1 or 48 kHz. Decimation factor 2 gives the same 12 kHz analysis rate, which is exactly why the sample rate is read rather than assumed.
+
+### Zone width, 2026-11-08: the first real measurement
+
+Autumn's first "Find my starting zone" run reported **103–199 Hz**, and the suggested target was 121–217 Hz. Both were too wide, and the cause was my design, not her voice: I had used the middle 80% of everything she said. Over six seconds, ordinary intonation moves that far, so the "zone" became her entire speaking range.
+
+Changed: the suggested zone is now a band of **plus or minus 10% of the middle pitch** (about three semitones total), which for her median of about 151 Hz gives roughly **136–166 Hz**. The measured movement is still shown, as information: "While you spoke, your pitch moved between about 103 and 199 Hz. That is normal for speech." Her voice moving a lot is not a fault and is not treated as one.
+
+If the wide zone was already saved on her phone, pressing "Find my starting zone" again and using the new suggestion replaces it.
+
+### State at the end of this session
+
+- Live build: `r53.0a88c87`, CI green, image published.
+- Phase 1 is built: analysis, trace, settings, stop screen, break prompt, session limit, Self-test, reference tone, Python/Praat validator.
+- Not yet done, all needing Autumn: run the Self-test on the phone and report the numbers; a 10-minute session for heat, stutter and drift; the 20-minute recording session for real-voice Praat comparison.
