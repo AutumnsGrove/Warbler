@@ -19,6 +19,7 @@
 import { eventLog } from '../eventlog.svelte';
 import { dbToMeter, holdPeak, isClipping, rmsFromSums, smoothLevel, toDbfs } from '../dsp/level';
 import { medianSmooth, type PitchFrame } from '../dsp/pitch';
+import { settings } from '../settings/store.svelte';
 import { pauseReason } from './health';
 
 /** How much pitch history to keep on the screen, in seconds. */
@@ -166,8 +167,15 @@ class MicSession {
 				}
 				this.onFrames(e.data.frames);
 			};
-			this.pitchWorker.postMessage({ type: 'start', sampleRate });
-			eventLog.add(`Pitch analysis started at ${sampleRate} Hz`);
+			this.pitchWorker.postMessage({
+				type: 'start',
+				sampleRate,
+				minHz: settings.values.minHz,
+				maxHz: settings.values.maxHz
+			});
+			eventLog.add(
+				`Pitch analysis started at ${sampleRate} Hz, looking for ${settings.values.minHz}–${settings.values.maxHz} Hz`
+			);
 		} catch (err) {
 			// The volume meter must still work even if pitch analysis cannot start.
 			this.stopPitchAnalysis();

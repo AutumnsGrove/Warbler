@@ -5,15 +5,25 @@
 	import PitchTrace from '../lib/components/PitchTrace.svelte';
 	import { mic, TRACE_SECONDS } from '../lib/audio/mic.svelte';
 	import { hzToNoteName } from '../lib/dsp/notes';
+	import { describeDistance } from '../lib/dsp/zones';
+	import { practiceZone, startZone } from '../lib/settings/settings';
+	import { settings } from '../lib/settings/store.svelte';
 	import { runningVersion } from '../lib/api';
 	import { onMount } from 'svelte';
 
 	let version = $state<string | null>(null);
 	onMount(async () => (version = await runningVersion()));
 
+	const values = $derived(settings.values);
 	const rate = $derived(mic.sampleRate ? `${mic.sampleRate.toLocaleString()} Hz` : null);
 	const hzText = $derived(mic.pitchHz === null ? null : `${Math.round(mic.pitchHz)} Hz`);
-	const noteText = $derived(mic.pitchHz === null ? null : hzToNoteName(mic.pitchHz));
+	const noteText = $derived(
+		mic.pitchHz === null || !values.showNoteNames ? null : hzToNoteName(mic.pitchHz)
+	);
+	/** The ramped band, or null in voice-only mode and until both zones are set. */
+	const zone = $derived(practiceZone(values));
+	const startBand = $derived(values.voiceOnly ? null : startZone(values));
+	const sentence = $derived(describeDistance(mic.pitchHz, zone, 'your practice zone'));
 </script>
 
 <svelte:head><title>Warbler</title></svelte:head>
@@ -50,14 +60,22 @@
 {:else}
 	<div class="card">
 		<h2>{mic.state === 'paused' ? 'Paused' : 'Listening'}</h2>
-		<PitchTrace frames={mic.frames} seconds={TRACE_SECONDS} />
+		<PitchTrace
+			frames={mic.frames}
+			seconds={TRACE_SECONDS}
+			{zone}
+			startZone={startBand}
+			viewLow={values.minHz}
+			viewHigh={values.maxHz}
+		/>
 		<p class="readout">
 			{#if hzText}
-				{hzText} <span class="note-name">note {noteText}</span>
+				{hzText}{#if noteText}<span class="note-name">note {noteText}</span>{/if}
 			{:else}
 				<span class="muted">{mic.state === 'paused' ? 'No reading while paused' : 'Waiting for your voice'}</span>
 			{/if}
 		</p>
+		{#if sentence}<p class="note">{sentence}</p>{/if}
 		<p class="muted small">Approximate measurement, not a diagnosis.</p>
 		<Meter level={mic.level} peak={mic.peak} db={mic.db} clipping={mic.clipping} />
 		{#if mic.clipping}

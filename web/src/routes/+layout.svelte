@@ -3,9 +3,14 @@
 	import { page } from '$app/state';
 	import Mic from '@lucide/svelte/icons/mic';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
+	import { settings } from '../lib/settings/store.svelte';
+	import { onMount } from 'svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
+
+	// Read the saved settings once, before any screen needs them.
+	onMount(() => settings.load());
 
 	const tabs = [
 		{ href: '/', label: 'Practice', icon: Mic },
