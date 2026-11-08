@@ -139,3 +139,15 @@ The first push containing `web/src/lib/dsp/validation.test.ts` failed in CI whil
 Fix: `@types/node` added as a dev dependency of `web/`, so the type check sees what the test actually uses. After the fix, `make test-web-clean` and CI both pass, and the image for `r49.e01f40e` published.
 
 Lesson for later phases: any test that reaches outside the browser (reading files, benchmarking) needs its types declared, or CI will disagree with the local machine.
+
+### Phone findings, 2026-11-08 (first real use of the trace)
+
+Autumn tested the Phase 1 build on her iPhone and reported two problems, both real:
+
+1. **"How do I know what range to put in?"** Typing zones in hertz is unreasonable; almost nobody knows their own pitch in numbers. Added a "Find my starting zone" panel on the Settings screen: six seconds of ordinary speech, then a suggested zone from the middle 80% of what was heard, shown with the note name. Nothing is applied until she presses the button. Under the target zone there is also a "two semitones above" guess, labelled as a guess, with a pointer to a speech-language pathologist for a real goal.
+2. **"So much stop and start in the readouts."** Three causes, all fixed:
+   - The trace drew **raw** frames; `PLAN.md` asks for a 3-5 frame median for display. It now draws a 5-frame median, so single-frame mistakes no longer look like dramatic leaps.
+   - A single frame could jump an octave and still pass the confidence gate. The tracker now believes a jump of more than 5 semitones only after a second frame confirms it, and then starts a fresh average. A real move (half a second at 150 Hz, then at 300 Hz) is followed; a 20 ms squeak is ignored.
+   - The number vanished during every short pause between words. It is now **held for 700 ms**, then cleared, so it does not blink but is never stale for long.
+
+Also learned: her iPhone reports **24,000 Hz** on the practice screen, not 44.1 or 48 kHz. Decimation factor 2 gives the same 12 kHz analysis rate, which is exactly why the sample rate is read rather than assumed.
