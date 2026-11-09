@@ -179,3 +179,20 @@ Note that the earlier run's median was about 151 Hz and this one about 188 Hz. A
 - The Self-test screen numbers from the phone (six tones, plus the sample rate line).
 - A 10-minute session: heat, stutter, drift, and whether the break sheet appears at ten minutes.
 - The 20-minute recording session in `local-recordings/` for the real-voice Praat comparison.
+
+### Reported 2026-11-09 (to investigate next session): shaky detection and gaps
+
+Autumn, after the zone finder worked well: "the analysis bit is super shaky like it doesnt pick up my voice super well, even when im right up close and personal with the microphone. and the lines have a lot of gaps in between them because of the 'dead space' where nothing was picked up."
+
+So the zone suggestion is now trustworthy, but the live trace still drops out far more than it should. This is the main thing to fix before Phase 1 can be called done, because a trace full of holes is hard to read while speaking.
+
+**Leads worth checking, cheapest first:**
+
+1. **The three reasons a frame is dropped are invisible.** A frame becomes a gap if it is below the silence gate, below the clarity gate, or rejected as an impossible jump. Nothing records which. Adding a count per reason (shown on Diagnostics or Self-test) turns guessing into measurement.
+2. **The silence gate may be too high.** `SILENCE_RMS` is 0.004, about -48 dBFS. iPhone microphones at 24 kHz, held close, may still sit lower than that, especially with iOS's own input processing. Her level from the diagnostics page would settle it.
+3. **The clarity gate may be too strict.** `MIN_CLARITY` is 0.6. Real speech through a phone microphone often scores 0.5 to 0.8 with YIN; ambient noise and the phone's processing both lower it. A test against her own recorded voice would say where the line should sit.
+4. **The jump filter could be too eager.** A 5-semitone limit, confirmed over 2 frames, may clip real consonant-to-vowel movements. Counting rejections answers this.
+5. **Short gaps are drawn as breaks.** With a 15 ms hop, even a 10% dropout rate produces a dozen small gaps a second. Once the detection is fixed, consider bridging gaps under roughly 60 ms for drawing, while still leaving real silence blank.
+6. **No windowing before YIN.** The window is rectangular; a Hann window can raise clarity on real speech. Worth trying if the gates are not the whole story.
+
+**Do not loosen thresholds blindly.** The plan's rule stands: a missing reading is better than a wrong one. The fix is to find out which gate is firing, then make the measurement better (window, gates tuned to real recordings), not merely permissive.
