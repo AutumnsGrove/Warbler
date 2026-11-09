@@ -12,7 +12,7 @@ Last updated 2026-11-09.
 
 **Phase 1 (live pitch) is built and pushed**, live build `r53.0a88c87` (the potato is on `r51.4f3bec0` until Autumn updates). It is not closed yet: Phase 1's "Done when" needs Autumn's phone checks (Self-test numbers, 10-minute session) and the 20-minute recording session, none of which an agent can fake. Then Phase 2 (sessions and storage, `docs/data-api.md`) starts.
 
-Also live in this phase: a "Find my starting zone" panel on Settings, so nobody has to know hertz; the practice zone is a band of plus or minus 10% around the middle pitch, never the whole speaking range.
+Also live in this phase: a "Find my starting zone" panel on Settings, so nobody has to know hertz. It is confirmed on her phone (2026-11-09): about 188 Hz, suggesting 169-207 Hz, which she approved of as a sensible width. The practice zone is a band of plus or minus 10% around the middle pitch, never the whole speaking range.
 
 ## Phone test results (iPhone, installed app) - `NOTES.md` has the table
 

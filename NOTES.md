@@ -165,3 +165,17 @@ If the wide zone was already saved on her phone, pressing "Find my starting zone
 - Live build: `r53.0a88c87`, CI green, image published.
 - Phase 1 is built: analysis, trace, settings, stop screen, break prompt, session limit, Self-test, reference tone, Python/Praat validator.
 - Not yet done, all needing Autumn: run the Self-test on the phone and report the numbers; a 10-minute session for heat, stutter and drift; the 20-minute recording session for real-voice Praat comparison.
+
+### Zone finder, second run (2026-11-09)
+
+After the width fix, Autumn ran "Find my starting zone" again and got **around 188 Hz**, with a suggested band of **169–207 Hz**. She reported that it "gave my voice sitting at around 188hz, with a range of 169-207. thats more tightened. big fan of that!"
+
+So the narrower band is the right shape: about three semitones in total, centred on the middle of her speaking pitch (188 Hz is close to F#3 at 185 Hz). No further change needed to the suggestion.
+
+Note that the earlier run's median was about 151 Hz and this one about 188 Hz. A difference that size between two six-second samples is normal: it depends on what she happened to say and how she was sitting. Worth remembering before treating any single capture as "her pitch".
+
+### Still outstanding for Phase 1
+
+- The Self-test screen numbers from the phone (six tones, plus the sample rate line).
+- A 10-minute session: heat, stutter, drift, and whether the break sheet appears at ten minutes.
+- The 20-minute recording session in `local-recordings/` for the real-voice Praat comparison.
