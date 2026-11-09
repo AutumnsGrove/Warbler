@@ -2,7 +2,7 @@
 
 Where things stand, so the next session can start without rereading the whole history. Autumn uses she/her pronouns and is new to the technical vocabulary: explain terms plainly. Read `AGENTS.md` first, then `PLAN.md`.
 
-Last updated 2026-11-08.
+Last updated 2026-11-09.
 
 ## State
 
@@ -10,7 +10,9 @@ Last updated 2026-11-08.
 
 **Phase 0 is closed.** Warbler runs in Docker on the potato at `https://lepotato.taild95077.ts.net:8892`, behind Tailscale with the identity lock enforced. Updating works end to end both ways: the Settings button, and an update from Meridian (`r36.50f3710` to `r38.69f724b` in 22 seconds on 2026-11-08). A deliberately broken build rolls back. The host watcher and rollback are proven. CI is green and publishes a multi-arch image to `ghcr.io/autumnsgrove/warbler`. The repo is public and MIT licensed. Every item in Phase 0's "Done when" is now met and recorded in `NOTES.md`.
 
-**Next is Phase 1 (live pitch).** Nothing in it has been written yet.
+**Phase 1 (live pitch) is built and pushed**, live build `r53.0a88c87` (the potato is on `r51.4f3bec0` until Autumn updates). It is not closed yet: Phase 1's "Done when" needs Autumn's phone checks (Self-test numbers, 10-minute session) and the 20-minute recording session, none of which an agent can fake. Then Phase 2 (sessions and storage, `docs/data-api.md`) starts.
+
+Also live in this phase: a "Find my starting zone" panel on Settings, so nobody has to know hertz; the practice zone is a band of plus or minus 10% around the middle pitch, never the whole speaking range.
 
 ## Phone test results (iPhone, installed app) - `NOTES.md` has the table
 
